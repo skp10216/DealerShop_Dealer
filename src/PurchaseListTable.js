@@ -3,7 +3,6 @@ import { styled } from '@mui/material/styles';
 import {
   Table,
   TableBody,
-  TableCell,
   TableContainer,
   TableHead,
   TableRow,

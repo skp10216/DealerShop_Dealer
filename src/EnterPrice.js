@@ -1,4 +1,3 @@
-import React from 'react';
 import React, { useState, useRef } from 'react';
 import {
   AppBar,
@@ -19,18 +18,15 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Typography,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
-import CommonLayout from './CommonLayout';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import EditIcon from '@mui/icons-material/Edit';
 import CommonLayout from './CommonLayout';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
 import StoreMallDirectoryIcon from '@mui/icons-material/StoreMallDirectory';
 import ListIcon from '@mui/icons-material/List';
 import DealerShopTableList from './DealerShopTableList';

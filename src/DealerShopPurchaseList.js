@@ -15,7 +15,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import CommonLayout from './CommonLayout';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/Inbox';
 import DraftsIcon from '@mui/icons-material/Drafts';
 import FormControlLabel from '@mui/material/FormControlLabel';
