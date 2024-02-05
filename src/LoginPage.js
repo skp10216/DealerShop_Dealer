@@ -115,8 +115,6 @@ export default function LoginPage() {
             sx={{
               mt: 3,
               mb: 2,
-              bgcolor: blue[500],
-              '&:hover': { bgcolor: blue[700] },
             }}
           >
             로그인
