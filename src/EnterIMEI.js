@@ -33,28 +33,20 @@ import StoreMallDirectoryIcon from '@mui/icons-material/StoreMallDirectory';
 import ListIcon from '@mui/icons-material/List';
 import DealerShopTableList from './DealerShopTableList';
 import ScreenshotIcon from '@mui/icons-material/Screenshot';
+import { useData } from './contexts/DataContext'; // DataContext 훅 사용
 
 export default function EnterIMEI() {
   const navigate = useNavigate();
+  const { updateData } = useData(); // 전역 상태 업데이트 함수 사용
   const [imei, setIMEI] = useState('');
 
-  const handleDealerManagementClick = () => {
-    navigate('/DealerShopListPage');
-  };
-
-  const handleSettingsClick = () => {
-    // MainPage에서의 환경설정 기능
-    console.log('Main Page Setting Click');
-  };
-
-  const handleDealerPurchaseClick = () => {
-    navigate('/DealerShopPurchaseList');
-  };
-
+  // 페이지 이동 핸들러 함수
   const handleEnterIMEI = () => {
-    navigate('/EnterPhoneInfo');
+    updateData('imei', imei); // 전역 상태에 IMEI 번호 저장
+    navigate('/EnterPhoneInfo'); // IMEI 입력 후 다음 페이지로 네비게이션
   };
 
+  // IMEI 입력 핸들러 함수
   const handleIMEIChange = (event) => {
     const value = event.target.value;
     // 숫자만 입력되도록 검사
@@ -68,27 +60,24 @@ export default function EnterIMEI() {
       <CommonLayout
         title="IMEI 입력"
         icon={<ArrowBackIcon onClick={() => navigate(-1)} />}
-        onSettingsClick={handleSettingsClick}
       >
         <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
-          <nav aria-label="main Purchase list">
-            <List>
-              <ListItem disablePadding>
-                <ListItemButton>
-                  <ListItemIcon>
-                    <ScreenshotIcon color="primary" fontSize="large" />
-                  </ListItemIcon>
-                  <ListItemText primary="IMEI 입력" />
-                  <TextField
-                    label="IMEI"
-                    placeholder="'-'없이 숫자만 입력"
-                    value={imei}
-                    onChange={handleIMEIChange}
-                  />
-                </ListItemButton>
-              </ListItem>
-            </List>
-          </nav>
+          <List>
+            <ListItem disablePadding>
+              <ListItemButton>
+                <ListItemIcon>
+                  <ScreenshotIcon color="primary" fontSize="large" />
+                </ListItemIcon>
+                <ListItemText primary="IMEI 입력" />
+                <TextField
+                  label="IMEI"
+                  placeholder="'-'없이 숫자만 입력"
+                  value={imei}
+                  onChange={handleIMEIChange}
+                />
+              </ListItemButton>
+            </ListItem>
+          </List>
           <Divider />
         </Box>
         <Box position="fixed" bottom={0} left={0} right={0}>

@@ -1,27 +1,41 @@
 import React from 'react';
 import {
-  AppBar,
-  Toolbar,
-  IconButton,
-  Typography,
-  Button,
   Box,
+  Button,
   List,
   ListItem,
   ListItemText,
   Divider,
   ListItemIcon,
+  Typography,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ScreenshotIcon from '@mui/icons-material/Screenshot';
 import { useNavigate } from 'react-router-dom';
 import CommonLayout from './CommonLayout';
+import { useData } from './contexts/DataContext';
 
 export default function PurchaseConfirm() {
   const navigate = useNavigate();
+  const { data } = useData();
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.up('sm'));
+
+  const textStyle = {
+    primary: {
+      fontSize: matches ? '1.2rem' : '1rem', // Adjust font size based on screen size
+    },
+    secondary: {
+      fontSize: matches ? '1.1rem' : '0.9rem',
+      fontWeight: 'bold',
+    },
+  };
 
   const handleEnterConfirm = () => {
-    // 수거 완료 로직 구현
+    alert("수거가 완료되었습니다.");
+    navigate('/');
   };
 
   return (
@@ -30,72 +44,51 @@ export default function PurchaseConfirm() {
         title="수거 최종 확인"
         icon={<ArrowBackIcon onClick={() => navigate(-1)} />}
       >
-        <Box sx={{ width: '100%', bgcolor: 'background.paper', p: 2 }}>
+        <Box sx={{ width: '100%', bgcolor: 'background.paper', p: 2, overflow: 'auto' }}>
           <List>
             <ListItem>
               <ListItemIcon>
-                <ScreenshotIcon color="primary" fontSize="large" />
+                <ScreenshotIcon color="primary" />
               </ListItemIcon>
-              <ListItemText primary="입력하신 정보가 맞는지 마지막으로 확인해주세요." />
-            </ListItem>
-            <Divider />
-            <ListItem>
               <ListItemText
-                primary="신청자"
-                secondary={<strong>서광필</strong>}
+                primary="입력하신 정보가 맞는지 마지막으로 확인해주세요."
+                primaryTypographyProps={{ style: textStyle.primary }}
               />
             </ListItem>
             <Divider />
+            {/* 리스트 아이템들 구성 */}
             <ListItem>
               <ListItemText
-                primary="전화번호"
-                secondary={<strong>010-6876-7570</strong>}
-              />
-            </ListItem>
-            <Divider />
-            <ListItem>
-              <ListItemText
-                primary="은행"
-                secondary={<strong>국민은행</strong>}
-              />
-            </ListItem>
-            <Divider />
-            <ListItem>
-              <ListItemText
-                primary="예금주"
-                secondary={<strong>홍길동</strong>}
-              />
-            </ListItem>
-            <Divider />
-            <ListItem>
-              <ListItemText
-                primary="계좌번호"
-                secondary={<strong>014102-0406-9684</strong>}
+                primary="IMEI"
+                secondary={<Typography component="span" style={textStyle.secondary}>{data.imei}</Typography>}
               />
             </ListItem>
             <Divider />
             <ListItem>
               <ListItemText
                 primary="기기정보"
-                secondary={<strong>갤럭시 S22 플러스</strong>}
+                secondary={<Typography component="span" style={textStyle.secondary}>{`${data.manufacturer} ${data.series} ${data.model} ${data.size}`}</Typography>}
               />
             </ListItem>
             <Divider />
             <ListItem>
-              <ListItemText primary="검수등급" secondary={<strong>A</strong>} />
+              <ListItemText
+                primary="검수 등급"
+                secondary={<Typography component="span" style={textStyle.secondary}>{data.finalGrade}</Typography>}
+              />
             </ListItem>
             <Divider />
             <ListItem>
               <ListItemText
-                primary="검수등급 상세"
-                secondary={<strong>전체 깨끗</strong>}
+                primary="검수 등급 상세"
+                secondary={<Typography component="span" style={textStyle.secondary}>{data.finalGradeDetails.join(', ')}</Typography>}
               />
             </ListItem>
             <Divider />
             <ListItem>
               <ListItemText
                 primary="금액"
-                secondary={<strong>500,000원</strong>}
+                secondary={<Typography component="span" style={textStyle.secondary}>{data.totalPrice}</Typography>}
               />
             </ListItem>
             <Divider />

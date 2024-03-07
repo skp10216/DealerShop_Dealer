@@ -31,14 +31,16 @@ import StoreMallDirectoryIcon from '@mui/icons-material/StoreMallDirectory';
 import ListIcon from '@mui/icons-material/List';
 import DealerShopTableList from './DealerShopTableList';
 import ScreenshotIcon from '@mui/icons-material/Screenshot';
+import { useData } from './contexts/DataContext'; // DataContext 훅 사용
 
 export default function EnterPirce() {
   const navigate = useNavigate();
+  const { updateData } = useData(); // 전역 상태 업데이트 함수 사용
   const [price, setPrice] = useState('');
   const priceInputRef = useRef(null); // 금액 입력 필드에 대한 참조
   const [isError, setIsError] = useState(false); // 에러 상태 추가
-
   const [openModal, setOpenModal] = useState(false);
+  
 
   const handleCloseModal = () => {
     setOpenModal(false);
@@ -60,6 +62,7 @@ export default function EnterPirce() {
   };
 
   const handleConfirm = () => {
+    updateData('totalPrice', price); // 전역 상태에 price 번호 저장
     handleCloseModal(); // 모달 닫기
     navigate('/PurchaseConfirm'); // PurchaseConfirm 경로로 이동
   };

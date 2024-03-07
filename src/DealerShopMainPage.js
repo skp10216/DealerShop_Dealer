@@ -30,6 +30,10 @@ export default function MainPage() {
     navigate('/DealerShopPurchaseList');
   };
 
+  const handleDealerDirectPurchaseClick = () => {
+    navigate('/EnterIMEI');
+  };
+
   const handleDealerPurchaseListClick = () => {
     navigate('/PurchaseList');
   };
@@ -84,6 +88,16 @@ export default function MainPage() {
             </Card>
           </Box>
           <Box display="flex" flexDirection="column" alignItems="center" mt={2}>
+          <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              fullWidth
+              style={{ marginBottom: '20px' }}
+              onClick={handleDealerDirectPurchaseClick}
+            >
+              직접 매입하기
+            </Button>
             {/* 기존 버튼 영역 */}
             <Button
               variant="contained"
@@ -93,7 +107,7 @@ export default function MainPage() {
               style={{ marginBottom: '20px' }}
               onClick={handleDealerPurchaseClick}
             >
-              매입하기
+              대리점 매입하기
             </Button>
             <Button
               variant="contained"
@@ -114,6 +128,7 @@ export default function MainPage() {
             >
               대리점 관리
             </Button>
+            
           </Box>
         </Container>
       </CommonLayout>

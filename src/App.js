@@ -18,9 +18,11 @@ import EnterInspection from './EnterInspection';
 import EnterPrice from './EnterPrice';
 import PurchaseConfirm from './PurchaseConfirm';
 import PurchaseList from './PurchaseList';
+import { DataProvider } from './contexts/DataContext';
 
 const App = () => {
   return (
+    <DataProvider>
     <Router>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
@@ -52,6 +54,7 @@ const App = () => {
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </Router>
+    </DataProvider>
   );
 };
 
