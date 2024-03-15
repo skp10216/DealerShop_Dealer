@@ -18,7 +18,7 @@ import EnterInspection from './EnterInspection';
 import EnterPrice from './EnterPrice';
 import PurchaseConfirm from './PurchaseConfirm';
 import PurchaseList from './PurchaseList';
-import { DataProvider } from './contexts/DataContext';
+import { DataProvider } from './contexts/PurchaseDataContext';
 
 const App = () => {
   return (

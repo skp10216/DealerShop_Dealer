@@ -4,13 +4,13 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ScreenshotIcon from '@mui/icons-material/Screenshot';
 import { useNavigate } from 'react-router-dom';
 import CommonLayout from './CommonLayout';
-import { useData } from './contexts/DataContext'; // DataContext import
+import { useData } from './contexts/PurchaseDataContext'; // DataContext import
 
 export default function EnterPhoneInfo() {
   const navigate = useNavigate();
   const { updateData } = useData(); // 사용자의 선택을 전역 상태에 저장하기 위해 useData 훅 사용
 
-  const manufacturers = ['APPLE', 'SAMSUNG', 'LG'];
+  const carrier = ['APPLE', 'SAMSUNG', 'LG'];
   const series = ['갤럭시S22', '갤럭시 S22 플러스', '갤럭시S22 울트라'];
   const models = ['갤럭시S22', '갤럭시 S22 플러스'];
   const sizes = ['64GB', '128GB', '256GB', '512GB'];
@@ -35,8 +35,8 @@ export default function EnterPhoneInfo() {
               <ListItemText primary="접수하시려는 휴대폰의 모델정보를 입력." />
             </ListItem>
             {[
-              { label: '1. 제조사 선택', options: manufacturers, onChange: (value) => handleUpdateData('manufacturer', value) },
-              { label: '2. 시리즈 선택', options: series, onChange: (value) => handleUpdateData('series', value), disabled: !manufacturers },
+              { label: '1. 제조사 선택', options: carrier, onChange: (value) => handleUpdateData('carrier', value) },
+              { label: '2. 시리즈 선택', options: series, onChange: (value) => handleUpdateData('series', value), disabled: !carrier },
               { label: '3. 모델 선택', options: models, onChange: (value) => handleUpdateData('model', value), disabled: !series },
               { label: '4. 용량 선택', options: sizes, onChange: (value) => handleUpdateData('size', value), disabled: !models },
             ].map((item, index) => (

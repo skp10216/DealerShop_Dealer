@@ -33,7 +33,7 @@ import StoreMallDirectoryIcon from '@mui/icons-material/StoreMallDirectory';
 import ListIcon from '@mui/icons-material/List';
 import DealerShopTableList from './DealerShopTableList';
 import ScreenshotIcon from '@mui/icons-material/Screenshot';
-import { useData } from './contexts/DataContext'; // DataContext 훅 사용
+import { useData } from './contexts/PurchaseDataContext'; // DataContext 훅 사용
 
 export default function EnterIMEI() {
   const navigate = useNavigate();

@@ -15,7 +15,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ScreenshotIcon from '@mui/icons-material/Screenshot';
 import { useNavigate } from 'react-router-dom';
 import CommonLayout from './CommonLayout';
-import { useData } from './contexts/DataContext';
+import { useData } from './contexts/PurchaseDataContext';
 
 export default function PurchaseConfirm() {
   const navigate = useNavigate();
@@ -33,9 +33,52 @@ export default function PurchaseConfirm() {
     },
   };
 
-  const handleEnterConfirm = () => {
-    alert("수거가 완료되었습니다.");
-    navigate('/');
+  const handleEnterConfirm = async () => {
+    try {
+      let purchasePriceWithoutCommas = data.purchasePrice.replace(/,/g, '');
+      let purchasePrice = parseInt(purchasePriceWithoutCommas, 10);
+
+      const phoneData = {
+        IMEI: data.imei,
+        Carrier: data.carrier,
+        Model: data.model,
+        Size: data.size,
+      };
+  
+      const purchaseData = {
+        UserID: 1,
+        PhoneID: 0,
+        PaymentStatus: "Pending",
+        PurchaseGrade: data.purchaseGrade,
+        PurchaseDetails: data.purchaseDetails.join(", "),
+        PurchasePrice: purchasePrice
+      };
+  
+      // fetch를 사용하여 서버에 데이터를 전송합니다.
+    const response = await fetch('http://127.0.0.1:8000/phone-purchase/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ phone: phoneData, purchase: purchaseData }),
+    });
+  
+      if (!response.ok) {
+        throw new Error('Failed to confirm purchase. ' + response.statusText);
+      }
+
+    // 응답을 JSON 형태로 변환합니다.
+    const result = await response.json(); // 이 부분이 추가되었습니다.
+
+      // 처리 성공 후, 예를 들어 홈 화면으로 리디렉션
+      alert("수거가 완료되었습니다.");
+      console.log(result); // 성공 결과 로깅
+
+      navigate('/main'); // 실제 사용 시 활성화
+    } catch (error) {
+      alert(`Error: ${error.message}`);
+      console.error(error); // 에러 로깅
+    }
   };
 
   return (
@@ -67,28 +110,28 @@ export default function PurchaseConfirm() {
             <ListItem>
               <ListItemText
                 primary="기기정보"
-                secondary={<Typography component="span" style={textStyle.secondary}>{`${data.manufacturer} ${data.series} ${data.model} ${data.size}`}</Typography>}
+                secondary={<Typography component="span" style={textStyle.secondary}>{`${data.carrier} ${data.series} ${data.model} ${data.size}`}</Typography>}
               />
             </ListItem>
             <Divider />
             <ListItem>
               <ListItemText
                 primary="검수 등급"
-                secondary={<Typography component="span" style={textStyle.secondary}>{data.finalGrade}</Typography>}
+                secondary={<Typography component="span" style={textStyle.secondary}>{data.purchaseGrade}</Typography>}
               />
             </ListItem>
             <Divider />
             <ListItem>
               <ListItemText
                 primary="검수 등급 상세"
-                secondary={<Typography component="span" style={textStyle.secondary}>{data.finalGradeDetails.join(', ')}</Typography>}
+                secondary={<Typography component="span" style={textStyle.secondary}>{data.purchaseDetails}</Typography>}
               />
             </ListItem>
             <Divider />
             <ListItem>
               <ListItemText
                 primary="금액"
-                secondary={<Typography component="span" style={textStyle.secondary}>{data.totalPrice}</Typography>}
+                secondary={<Typography component="span" style={textStyle.secondary}>{data.purchasePrice}</Typography>}
               />
             </ListItem>
             <Divider />

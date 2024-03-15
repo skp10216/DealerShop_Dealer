@@ -4,7 +4,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ScreenshotIcon from '@mui/icons-material/Screenshot';
 import { useNavigate } from 'react-router-dom';
 import CommonLayout from './CommonLayout';
-import { useData } from './contexts/DataContext';
+import { useData } from './contexts/PurchaseDataContext';
 
 export default function EnterInspection() {
   const navigate = useNavigate();
@@ -26,11 +26,11 @@ export default function EnterInspection() {
     // 등급 선택에 따라 최종 등급을 전역 상태에 업데이트합니다.
     const selectedGrades = Object.keys(data).filter(key => gradeOptions[key] && data[key].length > 0);
     const highestPriorityGrade = selectedGrades.sort((a, b) => gradePriority.indexOf(a) - gradePriority.indexOf(b))[0] || 'N/A';
-    updateData('finalGrade', highestPriorityGrade);
+    updateData('purchaseGrade', highestPriorityGrade);
 
     // 최종 등급 상세 업데이트
     const details = highestPriorityGrade ? data[highestPriorityGrade] : [];
-    updateData('finalGradeDetails', details);
+    updateData('purchaseDetails', details);
 
   }, [data, updateData]);
 
@@ -39,8 +39,8 @@ export default function EnterInspection() {
     Object.keys(gradeOptions).forEach(gradeKey => {
       updateData(gradeKey, []);
     });
-    updateData('finalGrade', ''); // 전역 상태의 최종 등급도 초기화합니다.
-    updateData('finalGradeDetails', []); // 전역 상태의 최종 등급도 초기화합니다.
+    updateData('purchaseGrade', ''); // 전역 상태의 최종 등급도 초기화합니다.
+    updateData('purchaseDetails', []); // 전역 상태의 최종 등급도 초기화합니다.
   };
 
   const handleBackClick = () => navigate('/EnterPhoneInfo');
@@ -79,7 +79,7 @@ export default function EnterInspection() {
             ))}
           </List>
           <Typography variant="h6">최종 등급: {data.finalGrade}</Typography>
-          <Typography variant="body1">최종 등급 상세:{data.finalGradeDetails} </Typography>
+          <Typography variant="body1">최종 등급 상세:{data.finalpurchaseDetails} </Typography>
 
           {/* 전역 데이터 전체 출력 */}
           <Typography sx={{ mt: 2 }} variant="h6">전역 데이터:</Typography>

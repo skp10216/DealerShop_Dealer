@@ -31,7 +31,7 @@ import StoreMallDirectoryIcon from '@mui/icons-material/StoreMallDirectory';
 import ListIcon from '@mui/icons-material/List';
 import DealerShopTableList from './DealerShopTableList';
 import ScreenshotIcon from '@mui/icons-material/Screenshot';
-import { useData } from './contexts/DataContext'; // DataContext 훅 사용
+import { useData } from './contexts/PurchaseDataContext'; // DataContext 훅 사용
 
 export default function EnterPirce() {
   const navigate = useNavigate();
@@ -51,7 +51,7 @@ export default function EnterPirce() {
     console.log('Main Page Setting Click');
   };
   const handleEnterPrice = () => {
-    if (price === '' || price === '0') {
+    if (price === '' || price === 0) {
       // 금액이 입력되지 않았거나 0인 경우 포커스 설정
       priceInputRef.current && priceInputRef.current.focus();
       setIsError(true); // 에러 상태를 true로 설정
@@ -62,7 +62,7 @@ export default function EnterPirce() {
   };
 
   const handleConfirm = () => {
-    updateData('totalPrice', price); // 전역 상태에 price 번호 저장
+    updateData('purchasePrice', price); // 전역 상태에 price 번호 저장
     handleCloseModal(); // 모달 닫기
     navigate('/PurchaseConfirm'); // PurchaseConfirm 경로로 이동
   };
