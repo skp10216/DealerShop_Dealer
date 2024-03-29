@@ -25,7 +25,7 @@ export default function EnterInspection() {
   useEffect(() => {
     // 등급 선택에 따라 최종 등급을 전역 상태에 업데이트합니다.
     const selectedGrades = Object.keys(data).filter(key => gradeOptions[key] && data[key].length > 0);
-    const highestPriorityGrade = selectedGrades.sort((a, b) => gradePriority.indexOf(a) - gradePriority.indexOf(b))[0] || 'N/A';
+    const highestPriorityGrade = selectedGrades.sort((a, b) => gradePriority.indexOf(a) - gradePriority.indexOf(b))[0] || '';
     updateData('purchaseGrade', highestPriorityGrade);
 
     // 최종 등급 상세 업데이트
@@ -78,8 +78,8 @@ export default function EnterInspection() {
               </ListItem>
             ))}
           </List>
-          <Typography variant="h6">최종 등급: {data.finalGrade}</Typography>
-          <Typography variant="body1">최종 등급 상세:{data.finalpurchaseDetails} </Typography>
+          <Typography variant="h6">최종 등급: {data.purchaseGrade || ""}</Typography>
+          <Typography variant="body1">최종 등급 상세:{data.purchaseDetails || ""} </Typography>
 
           {/* 전역 데이터 전체 출력 */}
           <Typography sx={{ mt: 2 }} variant="h6">전역 데이터:</Typography>

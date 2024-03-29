@@ -1,5 +1,4 @@
-import './style.css';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   TextField,
@@ -9,6 +8,7 @@ import {
   Typography,
   FormControlLabel,
   Checkbox,
+  Alert,
 } from '@mui/material';
 import { blue } from '@mui/material/colors';
 
@@ -16,7 +16,12 @@ export default function LoginPage() {
   const [id, setId] = useState('');
   const [password, setPassword] = useState('');
   const [rememberId, setRememberId] = useState(false);
+  const [loginError, setLoginError] = useState(false);
+  const [idError, setIdError] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
   const navigate = useNavigate();
+  const idRef = useRef(null);
+  const passwordRef = useRef(null);
 
   useEffect(() => {
     const savedId = localStorage.getItem('rememberId');
@@ -28,36 +33,48 @@ export default function LoginPage() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    console.log('로그인 시도: ', id, password);
-    // 테스트 코드
-    navigate('/main');
-
-    // 로그인 API 요청 및 처리 로직
-    try {
-      const response = await fetch('http://127.0.0.0/users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ id, password }),
-      });
-
-      if (response.ok) {
-        if (rememberId) {
-          localStorage.setItem('rememberId', id);
-        } else {
-          localStorage.removeItem('rememberId');
-        }
-        navigate('/main');
-      } else {
-        // 에러 처리
-        console.log('error');
-      }
-    } catch (error) {
-      // 에러 처리
-      console.log('error');
+    // 초기 상태로 리셋
+    setIdError(false);
+    setPasswordError(false);
+  
+    // 아이디 또는 비밀번호가 입력되지 않은 경우의 처리
+    if (!id) {
+      setIdError(true);
+      idRef.current.focus(); // ID 필드에 포커스
+    } else if (!password) {
+      setPasswordError(true);
+      passwordRef.current.focus(); // 비밀번호 필드에 포커스
     }
+  
+    // 아이디와 비밀번호 모두 입력된 경우에만 로그인 시도
+    if (id && password) {
+      // 로그인 로직...
+      try {
+        const response = await fetch('http://127.0.0.1:8000/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ Username: id, Password: password }),
+        });
+  
+        const data = await response.json();
+        if (response.ok) {
+          if (rememberId) {
+            localStorage.setItem('rememberId', id);
+          } else {
+            localStorage.removeItem('rememberId');
+          }
+          navigate('/main');
+        } else {
+          setLoginError(true); // 로그인 실패 상태 설정
+          setPassword(''); // 비밀번호 필드 초기화
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        setLoginError(true); // 로그인 실패 상태 설정
+      }
+    } 
   };
 
   return (
@@ -85,6 +102,9 @@ export default function LoginPage() {
             autoFocus
             value={id}
             onChange={(e) => setId(e.target.value)}
+            error={idError}
+            helperText={idError ? "ID를 입력해주세요." : ""}
+            ref={idRef}
           />
           <TextField
             margin="normal"
@@ -97,25 +117,20 @@ export default function LoginPage() {
             autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            error={passwordError}
+            helperText={passwordError ? "비밀번호를 입력해주세요." : ""}
+            ref={passwordRef}
           />
+          {loginError && <Alert severity="error">아이디/패스워드가 틀립니다. 다시 시도해주세요.</Alert>}
           <FormControlLabel
-            control={
-              <Checkbox
-                checked={rememberId}
-                onChange={(e) => setRememberId(e.target.checked)}
-                color="primary"
-              />
-            }
+            control={<Checkbox checked={rememberId} onChange={(e) => setRememberId(e.target.checked)} color="primary" />}
             label="Remember ID"
           />
           <Button
             type="submit"
             fullWidth
             variant="contained"
-            sx={{
-              mt: 3,
-              mb: 2,
-            }}
+            sx={{ mt: 3, mb: 2 }}
           >
             로그인
           </Button>

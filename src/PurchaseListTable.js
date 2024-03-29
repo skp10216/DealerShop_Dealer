@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import {
   Table,
@@ -8,13 +8,18 @@ import {
   TableRow,
   Paper,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from '@mui/material';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import { useNavigate } from 'react-router-dom';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     fontWeight: 'bold',
+    fontSize: 16,
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
@@ -30,74 +35,21 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-function createData(name, phone, status, grade, detail, price, date) {
-  return { name, phone, status, grade, detail, price, date };
-}
-
-const rows = [
-  createData(
-    '서광필',
-    '010-6876-7570',
-    '수거',
-    'A',
-    '전체 깨끗',
-    '500,000',
-    '2024-01-29-12:00'
-  ),
-  createData(
-    '서광필',
-    '010-6876-7570',
-    '수거',
-    'A',
-    '전체 깨끗',
-    '500,000',
-    '2024-01-29-12:00'
-  ),
-  createData(
-    '서광필',
-    '010-6876-7570',
-    '수거',
-    'A',
-    '전체 깨끗',
-    '500,000',
-    '2024-01-29-12:00'
-  ),
-  createData(
-    '서광필',
-    '010-6876-7570',
-    '수거',
-    'A',
-    '전체 깨끗',
-    '500,000',
-    '2024-01-29-12:00'
-  ),
-  createData(
-    '서광필',
-    '010-6876-7570',
-    '수거',
-    'A',
-    '전체 깨끗',
-    '500,000',
-    '2024-01-29-12:00'
-  ),
-  createData(
-    '서광필',
-    '010-6876-7570',
-    '수거',
-    'A',
-    '전체 깨끗',
-    '500,000',
-    '2024-01-29-12:00'
-  ),
-  // ... 나머지 데이터
-];
-
 export default function PurchaseListTable() {
-  const navigate = useNavigate();
-  const handlePurchaseClick = (row) => {
-    // 수거하기 버튼 클릭 시 로직
-    navigate('/EnterIMEI'); // 이동할 경로
+  
+  const fetchData = async () => {
+    const url = 'http://127.0.0.1:8000/purchases/';
+    const response = await fetch(url); // 수정된 URL 사용
+    if (!response.ok) {
+      throw new Error('Failed to fetch purchases');
+    }
+    const data = await response.json();
+    // 응답 데이터를 콘솔에 로그로 출력합니다.
+  console.log('Fetched purchases data:', data);
+  
+    return data;
   };
+  const [openModal, setOpenModal] = useState(false);
 
   const handleCancelClick = () => {
     setOpenModal(true);
@@ -112,36 +64,94 @@ export default function PurchaseListTable() {
     setOpenModal(false);
   };
 
+
+  const [rows, setRows] = useState([]);
+
+  useEffect(() => {
+    const getRows = async () => {
+      try {
+        const data = await fetchData();
+        setRows(data);
+      } catch (error) {
+        console.error('Failed to fetch purchases:', error);
+      }
+    };
+
+    getRows();
+  }, []);
+
+  
+
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 700 }} aria-label="customized table">
         <TableHead>
           <TableRow>
-            <StyledTableCell>이름</StyledTableCell>
-            <StyledTableCell align="right">전화번호</StyledTableCell>
+            <StyledTableCell>IMEI</StyledTableCell>
+            <StyledTableCell align="right">제조사</StyledTableCell>
+            <StyledTableCell align="right">시리즈</StyledTableCell>
+            <StyledTableCell align="right">모델</StyledTableCell>
+            <StyledTableCell align="right">사이즈</StyledTableCell>
             <StyledTableCell align="right">상태</StyledTableCell>
-            <StyledTableCell align="right">검수등급</StyledTableCell>
-            <StyledTableCell align="right">검수상세</StyledTableCell>
+            <StyledTableCell align="right">등급/상세</StyledTableCell>
             <StyledTableCell align="right">금액</StyledTableCell>
-            <StyledTableCell align="right">등록일</StyledTableCell>
+            <StyledTableCell align="right">매입일</StyledTableCell>
+            <StyledTableCell align="right">액션</StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {rows.map((row, index) => (
             <StyledTableRow key={index}>
-              <StyledTableCell component="th" scope="row">
-                {row.name}
+              <StyledTableCell component="th" scope="row">{row.IMEI}</StyledTableCell>
+              <StyledTableCell align="right">{row.Carrier}</StyledTableCell>
+              <StyledTableCell align="right">{row.Series}</StyledTableCell>
+              <StyledTableCell align="right">{row.Model}</StyledTableCell>
+              <StyledTableCell align="right">{row.Size}</StyledTableCell>
+              <StyledTableCell align="right">{row.PaymentStatus === "Pending" ? "접수" : row.PaymentStatus}</StyledTableCell>
+              <StyledTableCell align="right">
+                {row.PurchaseGrade}<br/>{row.PurchaseDetails}
               </StyledTableCell>
-              <StyledTableCell align="right">{row.phone}</StyledTableCell>
-              <StyledTableCell align="right">{row.status}</StyledTableCell>
-              <StyledTableCell align="right">{row.grade}</StyledTableCell>
-              <StyledTableCell align="right">{row.detail}</StyledTableCell>
-              <StyledTableCell align="right">{row.price}</StyledTableCell>
-              <StyledTableCell align="right">{row.date}</StyledTableCell>
+              <StyledTableCell align="right">{row.PurchasePrice.toLocaleString()}</StyledTableCell>
+              <StyledTableCell align="right">{new Date(row.CreatedAt).toLocaleString()}</StyledTableCell>
+              <StyledTableCell align="right">
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={handleCancelClick}
+                >
+                  취소
+                </Button>
+              </StyledTableCell>
             </StyledTableRow>
           ))}
         </TableBody>
       </Table>
+
+      {/* 모달 컴포넌트 */}
+      <Dialog
+        open={openModal}
+        onClose={handleCloseModal}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {'정말 취소 하시겠습니까?'}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            이 작업은 되돌릴 수 없습니다.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseModal} color="error">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmCancel} color="success" autoFocus>
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
+      
     </TableContainer>
   );
 }

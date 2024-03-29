@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useRef } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -39,20 +39,33 @@ export default function EnterIMEI() {
   const navigate = useNavigate();
   const { updateData } = useData(); // 전역 상태 업데이트 함수 사용
   const [imei, setIMEI] = useState('');
+  const iemiInputRef = useRef(null);
+  const [isError, setIsError] = useState(false); // 에러 상태 추가
 
   // 페이지 이동 핸들러 함수
   const handleEnterIMEI = () => {
+    if (!imei){
+      iemiInputRef.current && iemiInputRef.current.focus();
+      setIsError(true); // 에러 상태를 true로 설정
+      return
+    } else {
+      setIsError(false); // 에러 상태를 false 설정
+    }
+      
     updateData('imei', imei); // 전역 상태에 IMEI 번호 저장
     navigate('/EnterPhoneInfo'); // IMEI 입력 후 다음 페이지로 네비게이션
   };
 
   // IMEI 입력 핸들러 함수
   const handleIMEIChange = (event) => {
-    const value = event.target.value;
-    // 숫자만 입력되도록 검사
-    if (value === '' || /^[0-9\b]+$/.test(value)) {
-      setIMEI(value);
-    }
+      const {value} = event.target;
+      //영문과 숫자만 포함되어 있는지 검사하는 정규 표현식
+      const regex = /^[a-zA-Z0-9]+$/;
+
+      if (value === '' || regex.test(value)) {
+        setIMEI(event.target.value);
+        if (isError) setIsError(false); // 에러 상태 초기화
+      }
   };
 
   return (
@@ -71,9 +84,11 @@ export default function EnterIMEI() {
                 <ListItemText primary="IMEI 입력" />
                 <TextField
                   label="IMEI"
-                  placeholder="'-'없이 숫자만 입력"
                   value={imei}
+                  inputRef={iemiInputRef}
                   onChange={handleIMEIChange}
+                  error={isError} // 에러 상태에 따라 TextField 스타일 변경
+                  helperText={isError ? "IMEI 번호를 입력해주세요." : ""} // 에러 메시지 표시
                 />
               </ListItemButton>
             </ListItem>

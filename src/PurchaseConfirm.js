@@ -19,9 +19,10 @@ import { useData } from './contexts/PurchaseDataContext';
 
 export default function PurchaseConfirm() {
   const navigate = useNavigate();
-  const { data } = useData();
+  const { data,resetData } = useData();
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up('sm'));
+
 
   const textStyle = {
     primary: {
@@ -41,12 +42,13 @@ export default function PurchaseConfirm() {
       const phoneData = {
         IMEI: data.imei,
         Carrier: data.carrier,
+        Series : data.series,
         Model: data.model,
         Size: data.size,
       };
   
       const purchaseData = {
-        UserID: 1,
+        UserID: 1, //추후 변경 필요.
         PhoneID: 0,
         PaymentStatus: "Pending",
         PurchaseGrade: data.purchaseGrade,
@@ -72,6 +74,7 @@ export default function PurchaseConfirm() {
 
       // 처리 성공 후, 예를 들어 홈 화면으로 리디렉션
       alert("수거가 완료되었습니다.");
+      resetData();
       console.log(result); // 성공 결과 로깅
 
       navigate('/main'); // 실제 사용 시 활성화

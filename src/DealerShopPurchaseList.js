@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   IconButton,
@@ -9,86 +9,72 @@ import {
   Chip,
   Divider,
   Box,
+  Typography,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditIcon from '@mui/icons-material/Edit';
 import CommonLayout from './CommonLayout';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import InboxIcon from '@mui/icons-material/Inbox';
-import DraftsIcon from '@mui/icons-material/Drafts';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
-import Checkbox from '@mui/material/Checkbox';
 import StoreMallDirectoryIcon from '@mui/icons-material/StoreMallDirectory';
+import Checkbox from '@mui/material/Checkbox';
 
 export default function DealerShopPurchaseList() {
   const navigate = useNavigate();
+  const [dealers, setDealers] = useState([]);
 
-  // 대리점 목록 예시 데이터
-  const dealers = [
-    { id: 1, name: '대리점 A' },
-    { id: 2, name: '대리점 B' },
-    { id: 3, name: '대리점 C' },
-    { id: 4, name: '대리점 D' },
-    { id: 5, name: '대리점 E' },
-    // 추가 대리점 데이터...
-  ];
+  useEffect(() => {
+    const fetchDealers = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/shops/');
+        const data = await response.json();
+        setDealers(data);
+      } catch (error) {
+        console.error('Failed to fetch dealers:', error);
+      }
+    };
 
-  const handleCreateNewDealer = () => {
-    navigate('/DealerShopCreatePage'); // 이동할 경로
-  };
-  // 편집 아이콘 클릭 시 Update 페이지로 이동하는 함수
-  const handleEditClick = (dealerId) => {
-    navigate(`/DealerShopPurchaseTargetList/`);
-  };
+    fetchDealers();
+  }, []);
 
-  const handleSettingsClick = () => {
-    // DealerListPage에서의 환경설정 기능
+  const handleEditClick = (shopID) => {
+    navigate(`/DealerShopPurchaseTargetList`);
   };
 
   return (
     <CommonLayout
       title="수거대상 대리점 선택"
       icon={<ArrowBackIcon onClick={() => navigate(-1)} />}
-      onSettingsClick={handleSettingsClick}
     >
-      <div>
-        <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
-          <nav aria-label="main mailbox folders">
-            <List>
-              <ListItem disablePadding>
-                <ListItemButton>
-                  <ListItemIcon>
-                    <StoreMallDirectoryIcon color="primary" fontSize="large" />
-                  </ListItemIcon>
-                  <ListItemText primary="대리점 목록" />
-                  <FormControlLabel
-                    value="start"
-                    control={<Checkbox />}
-                    label="미수거대리점 보기"
-                    labelPlacement="start"
-                  />
-                </ListItemButton>
-              </ListItem>
-            </List>
-          </nav>
+      <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
+        <nav aria-label="main mailbox folders">
+          <List>
+            <ListItem disablePadding>
+              <ListItemButton>
+                <ListItemIcon>
+                  <StoreMallDirectoryIcon color="primary" fontSize="large" />
+                </ListItemIcon>
+                <ListItemText primary="대리점 목록" />
+                <Checkbox />
+              </ListItemButton>
+            </ListItem>
+          </List>
+        </nav>
+        <Divider />
+      </Box>
 
-          <Divider />
-        </Box>
-
-        <List>
-          {dealers.map((dealer) => (
+      <List>
+        {dealers.length > 0 ? (
+          dealers.map((dealer) => (
             <React.Fragment key={dealer.id}>
               <ListItem>
-                <ListItemText primary={dealer.name} />
+                <ListItemText primary={dealer.ShopName} />
                 <ListItemSecondaryAction>
                   <Chip label="1건" color="primary" />
                   <IconButton
                     edge="end"
                     aria-label="edit"
-                    onClick={() => handleEditClick(dealer.id)}
+                    onClick={() => handleEditClick(dealer.ShopID)}
                   >
                     <EditIcon />
                   </IconButton>
@@ -96,9 +82,11 @@ export default function DealerShopPurchaseList() {
               </ListItem>
               <Divider />
             </React.Fragment>
-          ))}
-        </List>
-      </div>
+          ))
+        ) : (
+          <Typography sx={{ margin: 2 }}>대리점이 없습니다.</Typography>
+        )}
+      </List>
     </CommonLayout>
   );
 }

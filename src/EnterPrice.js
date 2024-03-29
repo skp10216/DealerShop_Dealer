@@ -41,7 +41,6 @@ export default function EnterPirce() {
   const [isError, setIsError] = useState(false); // 에러 상태 추가
   const [openModal, setOpenModal] = useState(false);
   
-
   const handleCloseModal = () => {
     setOpenModal(false);
   };

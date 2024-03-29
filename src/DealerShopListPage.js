@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Divider from '@mui/material/Divider';
 import CommonLayout from './CommonLayout';
 import {
@@ -16,23 +16,28 @@ import { useNavigate } from 'react-router-dom';
 
 export default function DealerListPage() {
   const navigate = useNavigate();
+  
+  // 대리점 목록을 저장할 상태
+  const [dealers, setDealers] = useState([]);
 
-  // 대리점 목록 예시 데이터
-  const dealers = [
-    { id: 1, name: '대리점 A' },
-    { id: 2, name: '대리점 B' },
-    { id: 3, name: '대리점 C' },
-    { id: 4, name: '대리점 D' },
-    { id: 5, name: '대리점 E' },
-    // 추가 대리점 데이터...
-  ];
+  // 대리점 목록을 불러오는 함수
+  useEffect(() => {
+    const fetchDealers = async () => {
+      const response = await fetch('http://127.0.0.1:8000/shops/');
+      const data = await response.json();
+      setDealers(data); // 불러온 데이터로 상태 업데이트
+      console.log("result data" + data);
+    };
+
+    fetchDealers();
+  }, []); // 빈 배열을 전달하여 컴포넌트 마운트 시에만 실행
 
   const handleCreateNewDealer = () => {
-    navigate('/DealerShopCreatePage'); // 이동할 경로
+    navigate('/DealerShopCreatePage');
   };
-  // 편집 아이콘 클릭 시 Update 페이지로 이동하는 함수
-  const handleEditClick = (dealerId) => {
-    navigate(`/DealerShopUpdatePage/${dealerId}`);
+
+  const handleEditClick = (shopId) => {
+    navigate(`/DealerShopUpdatePage/${shopId}`);
   };
 
   const handleSettingsClick = () => {
@@ -48,14 +53,14 @@ export default function DealerListPage() {
       <div>
         <List>
           {dealers.map((dealer) => (
-            <React.Fragment key={dealer.id}>
+            <React.Fragment key={dealer.ShopID}>
               <ListItem>
-                <ListItemText primary={dealer.name} />
+                <ListItemText primary={dealer.ShopName} />
                 <ListItemSecondaryAction>
                   <IconButton
                     edge="end"
                     aria-label="edit"
-                    onClick={() => handleEditClick(dealer.id)}
+                    onClick={() => handleEditClick(dealer.ShopID)}
                   >
                     <EditIcon />
                   </IconButton>

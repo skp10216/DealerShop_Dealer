@@ -33,7 +33,7 @@ const App = () => {
           element={<DealerShopCreatePage />}
         />
         <Route
-          path="/DealerShopUpdatePage/:dealerShopId"
+          path="/DealerShopUpdatePage/:shop_id"
           element={<DealerShopUpdatePage />}
         />
         <Route
