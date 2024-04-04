@@ -79,7 +79,7 @@ export default function EnterInspection() {
             ))}
           </List>
           <Typography variant="h6">최종 등급: {data.purchaseGrade || ""}</Typography>
-          <Typography variant="body1">최종 등급 상세:{data.purchaseDetails || ""} </Typography>
+          <Typography variant="h6">최종 등급 상세:{data.purchaseDetails || ""} </Typography>
 
           {/* 전역 데이터 전체 출력 */}
           <Typography sx={{ mt: 2 }} variant="h6">전역 데이터:</Typography>

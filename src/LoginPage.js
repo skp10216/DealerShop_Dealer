@@ -11,6 +11,7 @@ import {
   Alert,
 } from '@mui/material';
 import { blue } from '@mui/material/colors';
+import { useAuth } from './contexts/AuthContext'; // Import the useAuth hook
 
 export default function LoginPage() {
   const [id, setId] = useState('');
@@ -22,6 +23,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const idRef = useRef(null);
   const passwordRef = useRef(null);
+  const {login} = useAuth();
 
   useEffect(() => {
     const savedId = localStorage.getItem('rememberId');
@@ -60,6 +62,7 @@ export default function LoginPage() {
   
         const data = await response.json();
         if (response.ok) {
+          login(data);
           if (rememberId) {
             localStorage.setItem('rememberId', id);
           } else {

@@ -15,6 +15,7 @@ import {
   DialogTitle,
 } from '@mui/material';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
+import { useAuth } from './contexts/AuthContext';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -36,19 +37,8 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 export default function PurchaseListTable() {
-  
-  const fetchData = async () => {
-    const url = 'http://127.0.0.1:8000/purchases/';
-    const response = await fetch(url); // 수정된 URL 사용
-    if (!response.ok) {
-      throw new Error('Failed to fetch purchases');
-    }
-    const data = await response.json();
-    // 응답 데이터를 콘솔에 로그로 출력합니다.
-  console.log('Fetched purchases data:', data);
-  
-    return data;
-  };
+
+  const { authData } = useAuth(); // 훅은 컴포넌트 본문의 최상위에서 호출합니다.
   const [openModal, setOpenModal] = useState(false);
 
   const handleCancelClick = () => {
@@ -64,13 +54,26 @@ export default function PurchaseListTable() {
     setOpenModal(false);
   };
 
-
   const [rows, setRows] = useState([]);
 
+  const fetchData = async () => {    
+    const url = `http://127.0.0.1:8000/purchases/${authData.UserID}`;
+    const response = await fetch(url); // 수정된 URL 사용
+    if (!response.ok) {
+      throw new Error('Failed to fetch purchases');
+    }
+    const data = await response.json();
+    // 응답 데이터를 콘솔에 로그로 출력합니다.
+  console.log('Fetched purchases data:', data);
+  
+    return data;
+  };
+
   useEffect(() => {
+
     const getRows = async () => {
       try {
-        const data = await fetchData();
+        const data = await fetchData(authData.UserID);
         setRows(data);
       } catch (error) {
         console.error('Failed to fetch purchases:', error);

@@ -14,10 +14,12 @@ import {
 import HomeIcon from '@mui/icons-material/Home';
 import { useNavigate } from 'react-router-dom';
 import CommonLayout from './CommonLayout';
+import { useAuth } from './contexts/AuthContext';
 
 export default function MainPage() {
   const navigate = useNavigate();
-
+  const { authData } = useAuth(); // Use the useAuth hook to access authentication data
+  
   const handleDealerManagementClick = () => {
     navigate('/DealerShopListPage');
   };
@@ -46,6 +48,13 @@ export default function MainPage() {
         onSettingsClick={handleSettingsClick}
       >
         <Container>
+        {authData && (
+            <Typography variant="h6" style={{ margin: '20px 0' }}>
+              안녕하세요, {authData.Username}님! {/* Adjust according to your authData structure */}
+            </Typography>
+          )}
+          
+          {/* The rest of your component remains unchanged */}
           {/* 새로 추가된 영역 */}
           <Box display="flex" justifyContent="center" mt={2}>
             <Card
@@ -128,7 +137,6 @@ export default function MainPage() {
             >
               대리점 관리
             </Button>
-            
           </Box>
         </Container>
       </CommonLayout>

@@ -13,9 +13,11 @@ import {
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditIcon from '@mui/icons-material/Edit';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from './contexts/AuthContext';
 
 export default function DealerListPage() {
   const navigate = useNavigate();
+  const { authData } = useAuth(); 
   
   // 대리점 목록을 저장할 상태
   const [dealers, setDealers] = useState([]);
@@ -23,7 +25,9 @@ export default function DealerListPage() {
   // 대리점 목록을 불러오는 함수
   useEffect(() => {
     const fetchDealers = async () => {
-      const response = await fetch('http://127.0.0.1:8000/shops/');
+      const url = `http://127.0.0.1:8000/shops/user/${authData.UserID}`;
+      const response = await fetch(url);
+      
       const data = await response.json();
       setDealers(data); // 불러온 데이터로 상태 업데이트
       console.log("result data" + data);

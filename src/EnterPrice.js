@@ -100,7 +100,7 @@ export default function EnterPirce() {
                 <ListItemIcon>
                   <ScreenshotIcon color="primary" fontSize="large" />
                 </ListItemIcon>
-                <ListItemText primary="고객에게 입금하실 최종 판매금액을 입력해주세요." />
+                <ListItemText primary="판매금액을 입력해주세요." />
               </ListItem>
               <ListItem>
                 <TextField

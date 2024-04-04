@@ -19,9 +19,11 @@ import EnterPrice from './EnterPrice';
 import PurchaseConfirm from './PurchaseConfirm';
 import PurchaseList from './PurchaseList';
 import { DataProvider } from './contexts/PurchaseDataContext';
+import { AuthProvider} from './contexts/AuthContext'
 
 const App = () => {
   return (
+    <AuthProvider>
     <DataProvider>
     <Router>
       <Routes>
@@ -55,6 +57,7 @@ const App = () => {
       </Routes>
     </Router>
     </DataProvider>
+    </AuthProvider>
   );
 };
 
