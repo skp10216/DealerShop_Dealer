@@ -77,7 +77,7 @@ export default function MainPage() {
                   padding="20px"
                   style={{ color: '#fff', fontWeight: 'bold' }}
                 >
-                  홍대점
+                  {authData.Username}
                 </Typography>
                 <Typography
                   color="textSecondary"

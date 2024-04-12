@@ -50,7 +50,6 @@ export default function LoginPage() {
   
     // 아이디와 비밀번호 모두 입력된 경우에만 로그인 시도
     if (id && password) {
-      // 로그인 로직...
       try {
         const response = await fetch('http://127.0.0.1:8000/login', {
           method: 'POST',

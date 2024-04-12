@@ -1,168 +1,135 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
-  AppBar,
-  Toolbar,
-  IconButton,
-  Typography,
-  Button,
-  Box,
-  Container,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-  Divider,
-  Chip,
-  TextField,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
+  AppBar, Toolbar, IconButton, Typography, Button, Box, Container, List, ListItem,
+  ListItemText, Divider, TextField, FormControl, InputLabel, Select, MenuItem,
+  FormLabel, RadioGroup, FormControlLabel, Radio,ListItemIcon 
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import { useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import FilterAltIcon from '@mui/icons-material/FilterAlt';
-import EditIcon from '@mui/icons-material/Edit';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import { useNavigate } from 'react-router-dom';
 import CommonLayout from './CommonLayout';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import StoreMallDirectoryIcon from '@mui/icons-material/StoreMallDirectory';
-import ListIcon from '@mui/icons-material/List';
-import DealerShopTableList from './DealerShopTableList';
-import ScreenshotIcon from '@mui/icons-material/Screenshot';
-import { useData } from './contexts/PurchaseDataContext'; // DataContext 훅 사용
+import { useData } from './contexts/PurchaseDataContext';
+import { useAuth } from './contexts/AuthContext';
 
-export default function EnterPirce() {
+export default function EnterPrice() {
   const navigate = useNavigate();
-  const { updateData } = useData(); // 전역 상태 업데이트 함수 사용
+  const { updateData } = useData();
   const [price, setPrice] = useState('');
-  const priceInputRef = useRef(null); // 금액 입력 필드에 대한 참조
-  const [isError, setIsError] = useState(false); // 에러 상태 추가
-  const [openModal, setOpenModal] = useState(false);
-  
-  const handleCloseModal = () => {
-    setOpenModal(false);
-  };
+  const priceInputRef = useRef(null);
+  const [isError, setIsError] = useState(false);
+  const [accountType, setAccountType] = useState('내 계좌');
+  const { authData } = useAuth();
+  const [bankInfo, setBankInfo] = useState({
+    bank: '',
+    accountHolder: '',
+    accountNumber: '',
+    phoneNumber: ''
+  });
 
-  const handleSettingsClick = () => {
-    // MainPage에서의 환경설정 기능
-    console.log('Main Page Setting Click');
-  };
-  const handleEnterPrice = () => {
-    if (price === '' || price === 0) {
-      // 금액이 입력되지 않았거나 0인 경우 포커스 설정
-      priceInputRef.current && priceInputRef.current.focus();
-      setIsError(true); // 에러 상태를 true로 설정
-    } else {
-      setIsError(false); // 에러 상태를 false로 설정
-      setOpenModal(true);
+  useEffect(() => {
+    console.log('authData:', authData);
+    priceInputRef.current.focus();
+
+    if (accountType === '내 계좌' && authData) {
+      setBankInfo({
+        bank: authData.Bank || '',
+        accountHolder: authData.AccountHolder || '',
+        accountNumber: authData.AccountNumber || '',
+        phoneNumber: authData.PhoneNumber || ''
+      });
+    }
+  }, [accountType, authData]);
+
+  const handleAccountTypeChange = (event) => {
+    const selectedAccountType = event.target.value;
+    setAccountType(selectedAccountType);
+    if (selectedAccountType === '타 계좌') {
+      setBankInfo({
+        bank: '',
+        accountHolder: '',
+        accountNumber: '',
+        phoneNumber: ''
+      });
     }
   };
 
-  const handleConfirm = () => {
-    updateData('purchasePrice', price); // 전역 상태에 price 번호 저장
-    handleCloseModal(); // 모달 닫기
-    navigate('/PurchaseConfirm'); // PurchaseConfirm 경로로 이동
+  const handleBankInfoChange = (prop) => (event) => {
+    setBankInfo({ ...bankInfo, [prop]: event.target.value });
   };
 
-  // 숫자를 쉼표가 있는 문자열로 포매팅하는 함수
-  const formatNumber = (num) => {
-    // 정수 부분과 소수점 부분을 분리
-    const parts = num.split('.');
-    // 정수 부분에 쉼표 추가
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    // 합쳐서 반환
-    return parts.join('.');
+  const handleEnterPrice = () => {
+    if (price === '' || price === 0) {
+      priceInputRef.current && priceInputRef.current.focus();
+      setIsError(true);
+    } else {
+      setIsError(false);
+      updateData('accountHolder', bankInfo.accountHolder);
+      updateData('accountNumber', bankInfo.accountNumber);
+      updateData('bankName', bankInfo.bank);
+      updateData('phoneNumber', bankInfo.phoneNumber);
+      updateData('purchasePrice', price); // 전역 상태에 price 저장
+      navigate('/PurchaseConfirm'); // PurchaseConfirm 경로로 이동
+    }
   };
 
   const handlePriceChange = (event) => {
-    const value = event.target.value;
-    const unformattedNumber = value.replace(/,/g, '');
-
-    // 숫자만 입력되도록 검사
-    if (unformattedNumber === '' || /^[0-9\b]+$/.test(unformattedNumber)) {
-      setPrice(formatNumber(unformattedNumber));
+    const value = event.target.value.replace(/,/g, '');
+    if (value === '' || /^[0-9\b]+$/.test(value)) {
+      setPrice(new Intl.NumberFormat('en-US').format(value));
     }
   };
 
   return (
     <div>
-      <CommonLayout
-        title="금액입력"
-        icon={<ArrowBackIcon onClick={() => navigate(-1)} />}
-        onSettingsClick={handleSettingsClick}
-      >
+      <CommonLayout title="금액 입력" icon={<ArrowBackIcon onClick={() => navigate(-1)} />}>
         <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
-          <nav aria-label="main Purchase list">
-            <List>
-              <ListItem>
-                <ListItemIcon>
-                  <ScreenshotIcon color="primary" fontSize="large" />
-                </ListItemIcon>
-                <ListItemText primary="판매금액을 입력해주세요." />
-              </ListItem>
-              <ListItem>
-                <TextField
-                  label="금액 입력"
-                  placeholder="'-'없이 숫자만 입력"
-                  value={price}
-                  onChange={handlePriceChange}
-                  fullWidth // 전체 너비를 사용하도록 설정
-                  inputRef={priceInputRef} // 참조 설정
-                  error={isError} // 에러 상태에 따라 TextField 스타일 변경
-                />
-              </ListItem>
-            </List>
-          </nav>
-          <Divider />
+          <List>
+            <ListItem>
+              <ListItemIcon>
+                <AttachMoneyIcon color="primary" fontSize="large" />
+              </ListItemIcon>
+              <ListItemText primary="판매금액을 입력해주세요." />
+            </ListItem>
+            <ListItem>
+              <TextField
+                label="금액 입력"
+                placeholder="'-' 없이 숫자만 입력"
+                value={price}
+                onChange={handlePriceChange}
+                fullWidth
+                inputRef={priceInputRef}
+                error={isError}
+              />
+            </ListItem>
+          </List>
+          
+          <List>
+            <ListItem>
+              <ListItemIcon>
+                <AccountBalanceIcon color="primary" fontSize="large" />
+              </ListItemIcon>
+              <ListItemText primary="입금받으실 계좌정보를 입력해주세요." />
+            </ListItem>
+            <ListItem>
+              <FormControl component="fieldset">
+                <FormLabel component="legend">계좌 유형</FormLabel>
+                <RadioGroup row aria-label="account type" name="account-type-group" value={accountType} onChange={handleAccountTypeChange}>
+                  <FormControlLabel value="내 계좌" control={<Radio />} label="내 계좌" />
+                  <FormControlLabel value="타 계좌" control={<Radio />} label="타 계좌" />
+                </RadioGroup>
+              </FormControl>
+            </ListItem>
+            <ListItem><TextField label="은행" fullWidth value={bankInfo.bank} onChange={handleBankInfoChange('bank')} /></ListItem>
+            <ListItem><TextField label="예금주" fullWidth value={bankInfo.accountHolder} onChange={handleBankInfoChange('accountHolder')} /></ListItem>
+            <ListItem><TextField label="계좌번호" fullWidth value={bankInfo.accountNumber} onChange={handleBankInfoChange('accountNumber')} /></ListItem>
+            <ListItem><TextField label="전화번호" fullWidth value={bankInfo.phoneNumber} onChange={handleBankInfoChange('phoneNumber')} /></ListItem>
+          </List>
         </Box>
         <Box position="fixed" bottom={0} left={0} right={0}>
-          <Button
-            variant="contained"
-            color="primary"
-            size="large"
-            fullWidth
-            onClick={handleEnterPrice}
-          >
-            금액 입력하기
-          </Button>
+          <Button variant="contained" color="primary" size="large" fullWidth onClick={handleEnterPrice}>금액 입력하기</Button>
         </Box>
       </CommonLayout>
-      {/* 모달 컴포넌트 */}
-      <Dialog open={openModal} onClose={handleCloseModal}>
-        <DialogTitle>입력한 금액 확인</DialogTitle>
-        <DialogContent>
-          <Typography
-            variant="h5"
-            style={{
-              fontWeight: 'bold',
-              textAlign: 'center',
-              color: '#1976D2',
-            }}
-          >
-            {price}원
-          </Typography>
-        </DialogContent>
-        <DialogActions style={{ justifyContent: 'center' }}>
-          <Button
-            onClick={handleCloseModal}
-            variant="outlined"
-            color="error"
-            style={{ margin: '8px' }}
-          >
-            취소
-          </Button>
-          <Button
-            onClick={handleConfirm}
-            variant="outlined"
-            color="primary"
-            style={{ margin: '8px' }}
-          >
-            확인
-          </Button>
-        </DialogActions>
-      </Dialog>
     </div>
   );
 }

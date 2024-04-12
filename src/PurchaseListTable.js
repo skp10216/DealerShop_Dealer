@@ -13,8 +13,10 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Typography, Grid,IconButton 
 } from '@mui/material';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
+import CloseIcon from '@mui/icons-material/Close';
 import { useAuth } from './contexts/AuthContext';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -36,9 +38,8 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-export default function PurchaseListTable() {
+export default function PurchaseListTable({data}) {
 
-  const { authData } = useAuth(); // 훅은 컴포넌트 본문의 최상위에서 호출합니다.
   const [openModal, setOpenModal] = useState(false);
 
   const handleCancelClick = () => {
@@ -54,36 +55,70 @@ export default function PurchaseListTable() {
     setOpenModal(false);
   };
 
-  const [rows, setRows] = useState([]);
 
-  const fetchData = async () => {    
-    const url = `http://127.0.0.1:8000/purchases/${authData.UserID}`;
-    const response = await fetch(url); // 수정된 URL 사용
-    if (!response.ok) {
-      throw new Error('Failed to fetch purchases');
+  const [paymentInfo, setPaymentInfo] = useState({});
+  const [paymentInfoModalOpen, setPaymentInfoModalOpen] = useState(false);
+  const [hasPaymentInfo, setHasPaymentInfo] = useState(true);
+
+  const fetchPaymentInfo = async (purchaseId) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/payment-info/purchase/${purchaseId}`);
+      if (response.status === 404) {
+        setHasPaymentInfo(false);
+        setPaymentInfoModalOpen(true);
+        return;
+      }
+      if (!response.ok) {
+        throw new Error('서버 통신에 문제가 발생했습니다.');
+      }
+      const data = await response.json();
+      setPaymentInfo(data);
+      setPaymentInfoModalOpen(true);
+      setHasPaymentInfo(true);
+    } catch (error) {
+      console.error('Fetching payment info failed:', error);
     }
-    const data = await response.json();
-    // 응답 데이터를 콘솔에 로그로 출력합니다.
-  console.log('Fetched purchases data:', data);
-  
-    return data;
   };
 
-  useEffect(() => {
-
-    const getRows = async () => {
-      try {
-        const data = await fetchData(authData.UserID);
-        setRows(data);
-      } catch (error) {
-        console.error('Failed to fetch purchases:', error);
+  const PaymentInfoModal = ({ open, onClose, info }) => (
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+      <DialogTitle>결제 정보 상세
+      <IconButton
+        aria-label="close"
+        onClick={onClose}
+        style={{ position: 'absolute', right: 8, top: 8, color: (theme) => theme.palette.grey[500] }}
+      >
+        <CloseIcon />
+      </IconButton>
+      </DialogTitle>
+      <DialogContent>
+        {hasPaymentInfo ? (
+          <Grid container spacing={2}>
+            <Grid item xs={6}><Typography variant="subtitle1" color="textSecondary">은행명</Typography></Grid>
+            <Grid item xs={6}><Typography variant="body1">{info.BankName}</Typography></Grid>
+            
+            <Grid item xs={6}><Typography variant="subtitle1" color="textSecondary">예금주</Typography></Grid>
+            <Grid item xs={6}><Typography variant="body1">{info.AccountHolder}</Typography></Grid>
+            
+            <Grid item xs={6}><Typography variant="subtitle1" color="textSecondary">계좌번호</Typography></Grid>
+            <Grid item xs={6}><Typography variant="body1">{info.AccountNumber}</Typography></Grid>
+            
+            <Grid item xs={6}><Typography variant="subtitle1" color="textSecondary">핸드폰 번호</Typography></Grid>
+            <Grid item xs={6}><Typography variant="body1">{info.PhoneNumber}</Typography></Grid>
+            
+            <Grid item xs={6}><Typography variant="subtitle1" color="textSecondary">기타</Typography></Grid>
+            <Grid item xs={6}><Typography variant="body1">{info.AdditionalInfo || ''}</Typography></Grid>
+          </Grid>
+        ) : (
+          <Typography>결제정보가 없습니다.</Typography>
+        )
       }
-    };
-
-    getRows();
-  }, []);
-
-  
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} color="error">닫기</Button>
+      </DialogActions>
+    </Dialog>
+  );
 
   return (
     <TableContainer component={Paper}>
@@ -103,7 +138,7 @@ export default function PurchaseListTable() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row, index) => (
+          {data.map((row, index) => (
             <StyledTableRow key={index}>
               <StyledTableCell component="th" scope="row">{row.IMEI}</StyledTableCell>
               <StyledTableCell align="right">{row.Carrier}</StyledTableCell>
@@ -117,6 +152,13 @@ export default function PurchaseListTable() {
               <StyledTableCell align="right">{row.PurchasePrice.toLocaleString()}</StyledTableCell>
               <StyledTableCell align="right">{new Date(row.CreatedAt).toLocaleString()}</StyledTableCell>
               <StyledTableCell align="right">
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                <Button
+                  variant="contained"
+                  onClick={() => fetchPaymentInfo(row.PurchaseID)} // PurchaseID를 사용하여 결제 정보 조회
+                >
+                  상세
+                </Button>
                 <Button
                   variant="contained"
                   color="error"
@@ -124,6 +166,7 @@ export default function PurchaseListTable() {
                 >
                   취소
                 </Button>
+                </div>
               </StyledTableCell>
             </StyledTableRow>
           ))}
@@ -154,6 +197,12 @@ export default function PurchaseListTable() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <PaymentInfoModal
+      open={paymentInfoModalOpen}
+      onClose={() => setPaymentInfoModalOpen(false)}
+      info={paymentInfo}
+      />      
       
     </TableContainer>
   );

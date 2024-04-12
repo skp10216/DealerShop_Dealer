@@ -16,13 +16,15 @@ import ScreenshotIcon from '@mui/icons-material/Screenshot';
 import { useNavigate } from 'react-router-dom';
 import CommonLayout from './CommonLayout';
 import { useData } from './contexts/PurchaseDataContext';
+import { useAuth } from './contexts/AuthContext';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 
 export default function PurchaseConfirm() {
   const navigate = useNavigate();
   const { data,resetData } = useData();
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up('sm'));
-
+  const { authData } = useAuth(); 
 
   const textStyle = {
     primary: {
@@ -31,6 +33,7 @@ export default function PurchaseConfirm() {
     secondary: {
       fontSize: matches ? '1.1rem' : '0.9rem',
       fontWeight: 'bold',
+      marginLeft: '16px',
     },
   };
 
@@ -48,13 +51,24 @@ export default function PurchaseConfirm() {
       };
   
       const purchaseData = {
-        UserID: 1, //추후 변경 필요.
+        UserID: authData.UserID, 
         PhoneID: 0,
         PaymentStatus: "Pending",
         PurchaseGrade: data.purchaseGrade,
         PurchaseDetails: data.purchaseDetails.join(", "),
-        PurchasePrice: purchasePrice
-      };
+        PurchasePrice: purchasePrice,
+        PurchaseETC : data.purchaseETC
+
+      }
+      
+      const payment_info_data = {
+        PurchaseID : 0,
+        AccountHolder: data.accountHolder, 
+        AccountNumber: data.accountNumber, 
+        BankName: data.bankName, 
+        PhoneNumber: data.phoneNumber 
+      }
+      ;
   
       // fetch를 사용하여 서버에 데이터를 전송합니다.
     const response = await fetch('http://127.0.0.1:8000/phone-purchase/', {
@@ -62,7 +76,7 @@ export default function PurchaseConfirm() {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ phone: phoneData, purchase: purchaseData }),
+      body: JSON.stringify({ phone: phoneData, purchase: purchaseData, payment_info: payment_info_data }),
     });
   
       if (!response.ok) {
@@ -131,13 +145,34 @@ export default function PurchaseConfirm() {
               />
             </ListItem>
             <Divider />
-            <ListItem>
-              <ListItemText
-                primary="금액"
-                secondary={<Typography component="span" style={textStyle.secondary}>{data.purchasePrice}</Typography>}
-              />
-            </ListItem>
-            <Divider />
+            <ListItem>        
+        <ListItemText
+          primary="은행명"
+          secondary={<Typography component="span" style={textStyle.secondary}>{data.bankName}</Typography>}
+        />
+      </ListItem>
+      <Divider />
+      <ListItem>
+        <ListItemText
+          primary="계좌번호"
+          secondary={<Typography component="span" style={textStyle.secondary}>{data.accountNumber}</Typography>}
+        />
+      </ListItem>
+      <Divider />
+      <ListItem>
+        <ListItemText
+          primary="예금주"
+          secondary={<Typography component="span" style={textStyle.secondary}>{data.accountHolder}</Typography>}
+        />
+      </ListItem>
+      <Divider />
+      <ListItem>
+        <ListItemText
+          primary="전화번호"
+          secondary={<Typography component="span" style={textStyle.secondary}>{data.phoneNumber}</Typography>}
+        />
+      </ListItem>
+      <Divider />
           </List>
         </Box>
         <Box position="fixed" bottom={0} left={0} right={0}>

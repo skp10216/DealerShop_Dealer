@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect,useState } from 'react';
 import { Box, Button, List, ListItem,ListItemIcon, ListItemText,Typography, Autocomplete, TextField, Chip, Paper  } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ScreenshotIcon from '@mui/icons-material/Screenshot';
@@ -9,6 +9,7 @@ import { useData } from './contexts/PurchaseDataContext';
 export default function EnterInspection() {
   const navigate = useNavigate();
   const { data, updateData } = useData();
+  const [purchaseETC, setPurchaseETC] = useState(''); 
 
   const gradeOptions = {
     'A등급': ['전체 깨끗'],
@@ -41,6 +42,17 @@ export default function EnterInspection() {
     });
     updateData('purchaseGrade', ''); // 전역 상태의 최종 등급도 초기화합니다.
     updateData('purchaseDetails', []); // 전역 상태의 최종 등급도 초기화합니다.
+    setPurchaseETC(''); 
+  };
+
+  const handleInspectionChange = (event) => {
+    // Update the local state for custom inspection details
+    setPurchaseETC(event.target.value);
+  };
+
+  const submitInspectionDetails = () => {
+    // Function to update the global state with the custom inspection details
+    updateData('purchaseETC', purchaseETC);
   };
 
   const handleBackClick = () => navigate('/EnterPhoneInfo');
@@ -77,6 +89,17 @@ export default function EnterInspection() {
                 />
               </ListItem>
             ))}
+            <ListItem>
+              <TextField
+                fullWidth
+                label="기타(특이사항)"
+                variant="outlined"
+                value={purchaseETC}
+                onChange={handleInspectionChange}
+                placeholder="검수 내용을 입력하세요"
+                onBlur={submitInspectionDetails} // Update the global state when the input field is blurred
+              />
+            </ListItem>
           </List>
           <Typography variant="h6">최종 등급: {data.purchaseGrade || ""}</Typography>
           <Typography variant="h6">최종 등급 상세:{data.purchaseDetails || ""} </Typography>

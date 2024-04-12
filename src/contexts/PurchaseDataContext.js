@@ -13,6 +13,12 @@ export const DataProvider = ({ children }) => {
     purchaseGrade: '',
     purchaseDetails: '',
     purchasePrice: 0,
+    purchaseETC: '',
+    // 계좌 정보를 저장할 새로운 키들 추가
+    accountHolder: '', // 예금주
+    accountNumber: '', // 계좌번호
+    bankName: '', // 은행명
+    phoneNumber: '' // 핸드폰번호
   };
 
   const [data, setData] = useState(initialState);
