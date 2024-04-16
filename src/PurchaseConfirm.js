@@ -52,17 +52,17 @@ export default function PurchaseConfirm() {
   
       const purchaseData = {
         UserID: authData.UserID, 
-        PhoneID: 0,
-        PaymentStatus: "Pending",
+        DealershipID: data.dealershipID,
+        PhoneID: 0, //임시
+        PaymentStatus: "Pending", 
         PurchaseGrade: data.purchaseGrade,
         PurchaseDetails: data.purchaseDetails.join(", "),
         PurchasePrice: purchasePrice,
         PurchaseETC : data.purchaseETC
-
       }
       
       const payment_info_data = {
-        PurchaseID : 0,
+        PurchaseID : 0, //임시
         AccountHolder: data.accountHolder, 
         AccountNumber: data.accountNumber, 
         BankName: data.bankName, 

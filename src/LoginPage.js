@@ -11,7 +11,7 @@ import {
   Alert,
 } from '@mui/material';
 import { blue } from '@mui/material/colors';
-import { useAuth } from './contexts/AuthContext'; // Import the useAuth hook
+import { useAuth } from './contexts/AuthContext'; 
 
 export default function LoginPage() {
   const [id, setId] = useState('');

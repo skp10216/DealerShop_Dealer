@@ -14,6 +14,7 @@ export const DataProvider = ({ children }) => {
     purchaseDetails: '',
     purchasePrice: 0,
     purchaseETC: '',
+    dealershipID: null,
     // 계좌 정보를 저장할 새로운 키들 추가
     accountHolder: '', // 예금주
     accountNumber: '', // 계좌번호

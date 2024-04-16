@@ -7,6 +7,7 @@ import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import ListIcon from '@mui/icons-material/List';
 import PurchaseListTable from './PurchaseListTable';
 import { useAuth } from './contexts/AuthContext';
+import MenuIcon from '@mui/icons-material/Menu';
 
 export default function PurchaseList() {
     const navigate = useNavigate();
@@ -20,7 +21,7 @@ export default function PurchaseList() {
         { label: "접수", value: "Pending" },
         { label: "검수중", value: "Review" },
         { label: "입금대기", value: "WaitDeposit" },
-        { label: "입금완료", value: "Complete" },
+        { label: "입금완료", value: "CompleteDeposit" },
         { label: "완료", value: "Finished" },
     ];
 
@@ -59,6 +60,8 @@ export default function PurchaseList() {
                     <nav aria-label="main Purchase list">
                         <List>
                             <ListItem disablePadding>
+                            
+                                <MenuIcon color="primary" fontSize="large"/>
                                 <ListItemText primary={`수거목록 (총 ${filteredData.length}건)`} />
                                 <IconButton
                                     color="primary"

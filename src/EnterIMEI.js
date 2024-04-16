@@ -1,112 +1,122 @@
-import React, { useState,useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
-  AppBar,
-  Toolbar,
-  IconButton,
-  Typography,
-  Button,
-  Box,
-  Container,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-  Divider,
-  Chip,
-  TextField,
+  AppBar, Toolbar, IconButton, Typography, Button, Box, Container,
+  List, ListItem, ListItemText, ListItemSecondaryAction, Divider,
+  Chip, TextField, Checkbox, FormControlLabel, MenuItem, FormControl, Select, InputLabel
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import FilterAltIcon from '@mui/icons-material/FilterAlt';
-import EditIcon from '@mui/icons-material/Edit';
 import CommonLayout from './CommonLayout';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import InboxIcon from '@mui/icons-material/Inbox';
-import DraftsIcon from '@mui/icons-material/Drafts';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
-import Checkbox from '@mui/material/Checkbox';
-import StoreMallDirectoryIcon from '@mui/icons-material/StoreMallDirectory';
-import ListIcon from '@mui/icons-material/List';
-import DealerShopTableList from './DealerShopTableList';
-import ScreenshotIcon from '@mui/icons-material/Screenshot';
-import { useData } from './contexts/PurchaseDataContext'; // DataContext 훅 사용
+import { useAuth } from './contexts/AuthContext';
+import { useData } from './contexts/PurchaseDataContext';
 
 export default function EnterIMEI() {
   const navigate = useNavigate();
-  const { updateData } = useData(); // 전역 상태 업데이트 함수 사용
+  const { authData } = useAuth();
+  const { updateData } = useData();  // useData에서 updateData 함수 가져오기
   const [imei, setIMEI] = useState('');
-  const iemiInputRef = useRef(null);
-  const [isError, setIsError] = useState(false); // 에러 상태 추가
+  const imeiInputRef = useRef(null);
+  const [isError, setIsError] = useState(false);
+  const [isDealership, setIsDealership] = useState(false);
+  const [dealers, setDealers] = useState([]);
+  const [selectedDealer, setSelectedDealer] = useState('');
 
-  // 페이지 이동 핸들러 함수
-  const handleEnterIMEI = () => {
-    if (!imei){
-      iemiInputRef.current && iemiInputRef.current.focus();
-      setIsError(true); // 에러 상태를 true로 설정
-      return
-    } else {
-      setIsError(false); // 에러 상태를 false 설정
+  const fetchDealers = async () => {
+    const url = `http://127.0.0.1:8000/shops/user/${authData.UserID}`;
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      setDealers(data || []); // 불러온 데이터로 상태 업데이트
+      console.log("Fetched dealers data: ", data);
+    } catch (error) {
+      console.error("Failed to fetch dealers", error);
     }
-      
-    updateData('imei', imei); // 전역 상태에 IMEI 번호 저장
-    navigate('/EnterPhoneInfo'); // IMEI 입력 후 다음 페이지로 네비게이션
   };
 
-  // IMEI 입력 핸들러 함수
-  const handleIMEIChange = (event) => {
-      const {value} = event.target;
-      //영문과 숫자만 포함되어 있는지 검사하는 정규 표현식
-      const regex = /^[a-zA-Z0-9]+$/;
+  const handleEnterIMEI = () => {
+    if (!imei) {
+      imeiInputRef.current.focus();
+      setIsError(true);
+      return;
+    }
+    setIsError(false);
+    navigate('/EnterPhoneInfo');
+  };
 
-      if (value === '' || regex.test(value)) {
-        setIMEI(event.target.value);
-        if (isError) setIsError(false); // 에러 상태 초기화
-      }
+  const handleIMEIChange = (event) => {
+    const regex = /^[a-zA-Z0-9]+$/;
+    const { value } = event.target;
+    if (value === '' || regex.test(value)) {
+      setIMEI(value);
+      updateData('imei', value);  
+      setIsError(false);
+    }
+  };
+
+  const handleCheckboxChange = (event) => {
+    setIsDealership(event.target.checked);
+    if (event.target.checked) {
+      fetchDealers();
+    } else {
+      setDealers([]);
+      setSelectedDealer('');
+      updateData('dealershipID', null);  // 체크박스 해제 시 dealershipID를 NULL로 초기화
+    }
+  };
+
+  const handleDealerChange = (event) => {
+    console.log("Selected dealer ID:", event.target.value);  // 로그로 선택된 값 확인
+    const ShopId = event.target.value;
+    setSelectedDealer(ShopId);
+    updateData('dealershipID', ShopId);  // 선택된 dealershipID를 업데이트
   };
 
   return (
-    <div>
-      <CommonLayout
-        title="IMEI 입력"
-        icon={<ArrowBackIcon onClick={() => navigate(-1)} />}
-      >
-        <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
-          <List>
-            <ListItem disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  <ScreenshotIcon color="primary" fontSize="large" />
-                </ListItemIcon>
-                <ListItemText primary="IMEI 입력" />
-                <TextField
-                  label="IMEI"
-                  value={imei}
-                  inputRef={iemiInputRef}
-                  onChange={handleIMEIChange}
-                  error={isError} // 에러 상태에 따라 TextField 스타일 변경
-                  helperText={isError ? "IMEI 번호를 입력해주세요." : ""} // 에러 메시지 표시
-                />
-              </ListItemButton>
+    <CommonLayout title="IMEI 입력" icon={<ArrowBackIcon onClick={() => navigate(-1)} />}>
+      <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
+        <List>
+          <ListItem disablePadding>
+            <TextField
+              label="IMEI"
+              fullWidth
+              value={imei}
+              inputRef={imeiInputRef}
+              onChange={handleIMEIChange}
+              error={isError}
+              helperText={isError ? "IMEI 번호를 입력해주세요." : ""}
+            />
+          </ListItem>
+          <ListItem>
+            <FormControlLabel
+              control={<Checkbox checked={isDealership} onChange={handleCheckboxChange} />}
+              label="대리점으로 매입"
+            />
+          </ListItem>
+          {isDealership && (
+            <ListItem>
+              <FormControl fullWidth>
+                <InputLabel id="dealer-select-label">대리점 선택</InputLabel>
+                <Select
+                  labelId="dealer-select-label"
+                  id="dealer-select"
+                  value={selectedDealer}
+                  label="대리점 선택"
+                  onChange={handleDealerChange}
+                >
+                  {dealers.map((dealer) => (
+                    <MenuItem key={dealer.ShopID} value={dealer.ShopID}>{`ID: ${dealer.ShopID}, 이름: ${dealer.ShopName}`}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </ListItem>
-          </List>
-          <Divider />
-        </Box>
-        <Box position="fixed" bottom={0} left={0} right={0}>
-          <Button
-            variant="contained"
-            color="primary"
-            size="large"
-            fullWidth
-            onClick={handleEnterIMEI}
-          >
-            IMEI 입력
-          </Button>
-        </Box>
-      </CommonLayout>
-    </div>
+          )}
+        </List>
+      </Box>
+      <Box position="fixed" bottom={0} left={0} right={0}>
+        <Button variant="contained" color="primary" size="large" fullWidth onClick={handleEnterIMEI}>
+          IMEI 입력
+        </Button>
+      </Box>
+    </CommonLayout>
   );
 }
