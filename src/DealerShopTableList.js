@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import {
   Table,
-  TableBody,  
+  TableBody,
   TableContainer,
   TableHead,
   TableRow,
@@ -13,14 +13,16 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Typography, Grid,IconButton 
 } from '@mui/material';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import { useNavigate } from 'react-router-dom';
+import CloseIcon from '@mui/icons-material/Close';
+import { useAuth } from './contexts/AuthContext';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.white,
-    color: theme.palette.common.blue, // 테이블 헤더 글자 색상을 파란색으로 지정
+    fontWeight: 'bold',
+    fontSize: 16,
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
@@ -36,27 +38,15 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-function createData(name, phone, status, date) {
-  return { name, phone, status, date };
-}
+export default function DealerShopTableList({data}) {
 
-const rows = [
-  createData('서광필', '010-6876-7570', '접수', '2024-01-29 12:00'),
-  createData('서광필', '010-6876-7570', '접수', '2024-01-29 12:00'),
-  createData('서광필', '010-6876-7570', '접수', '2024-01-29 12:00'),
-  createData('서광필', '010-6876-7570', '접수', '2024-01-29 12:00'),
-  createData('서광필', '010-6876-7570', '접수', '2024-01-29 12:00'),
-  createData('서광필', '010-6876-7570', '접수', '2024-01-29 12:00'),
-  // ... 나머지 데이터
-];
+   // 데이터가 배열인지 확인 후 처리
+   if (!Array.isArray(data)) {
+    console.error('Expected an array but received:', data);
+    return <div></div>;
+  }
 
-export default function DealerShopTableList() {
   const [openModal, setOpenModal] = useState(false);
-  const navigate = useNavigate();
-  const handlePurchaseClick = (row) => {
-    // 수거하기 버튼 클릭 시 로직
-    navigate('/EnterIMEI'); // 이동할 경로
-  };
 
   const handleCancelClick = () => {
     setOpenModal(true);
@@ -71,35 +61,115 @@ export default function DealerShopTableList() {
     setOpenModal(false);
   };
 
+
+  const [paymentInfo, setPaymentInfo] = useState({});
+  const [paymentInfoModalOpen, setPaymentInfoModalOpen] = useState(false);
+  const [hasPaymentInfo, setHasPaymentInfo] = useState(true);
+
+  const fetchPaymentInfo = async (purchaseId) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/payment-info/purchase/${purchaseId}`);
+      if (response.status === 404) {
+        setHasPaymentInfo(false);
+        setPaymentInfoModalOpen(true);
+        return;
+      }
+      if (!response.ok) {
+        throw new Error('서버 통신에 문제가 발생했습니다.');
+      }
+      const data = await response.json();
+      setPaymentInfo(data);
+      setPaymentInfoModalOpen(true);
+      setHasPaymentInfo(true);
+    } catch (error) {
+      console.error('Fetching payment info failed:', error);
+    }
+  };
+
+  const PaymentInfoModal = ({ open, onClose, info }) => (
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+      <DialogTitle>결제 정보 상세
+      <IconButton
+        aria-label="close"
+        onClick={onClose}
+        style={{ position: 'absolute', right: 8, top: 8, color: (theme) => theme.palette.grey[500] }}
+      >
+        <CloseIcon />
+      </IconButton>
+      </DialogTitle>
+      <DialogContent>
+        {hasPaymentInfo ? (
+          <Grid container spacing={2}>
+            <Grid item xs={6}><Typography variant="subtitle1" color="textSecondary">은행명</Typography></Grid>
+            <Grid item xs={6}><Typography variant="body1">{info.BankName}</Typography></Grid>
+            
+            <Grid item xs={6}><Typography variant="subtitle1" color="textSecondary">예금주</Typography></Grid>
+            <Grid item xs={6}><Typography variant="body1">{info.AccountHolder}</Typography></Grid>
+            
+            <Grid item xs={6}><Typography variant="subtitle1" color="textSecondary">계좌번호</Typography></Grid>
+            <Grid item xs={6}><Typography variant="body1">{info.AccountNumber}</Typography></Grid>
+            
+            <Grid item xs={6}><Typography variant="subtitle1" color="textSecondary">핸드폰 번호</Typography></Grid>
+            <Grid item xs={6}><Typography variant="body1">{info.PhoneNumber}</Typography></Grid>
+            
+            <Grid item xs={6}><Typography variant="subtitle1" color="textSecondary">기타</Typography></Grid>
+            <Grid item xs={6}><Typography variant="body1">{info.AdditionalInfo || ''}</Typography></Grid>
+          </Grid>
+        ) : (
+          <Typography>결제정보가 없습니다.</Typography>
+        )
+      }
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} color="error">닫기</Button>
+      </DialogActions>
+    </Dialog>
+  );
+
   return (
     <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 700 }} aria-label="customized table">
+      <Table sx={{ minWidth: 700 }} aria-label="customized table">        
         <TableHead>
           <TableRow>
-            <StyledTableCell>이름</StyledTableCell>
-            <StyledTableCell align="right">전화번호</StyledTableCell>
+            <StyledTableCell>IMEI</StyledTableCell>
+            <StyledTableCell align="right">제조사</StyledTableCell>
+            <StyledTableCell align="right">시리즈</StyledTableCell>
+            <StyledTableCell align="right">모델</StyledTableCell>
+            <StyledTableCell align="right">사이즈</StyledTableCell>
             <StyledTableCell align="right">상태</StyledTableCell>
-            <StyledTableCell align="right">등록일</StyledTableCell>
+            <StyledTableCell align="right">등급/상세</StyledTableCell>
+            <StyledTableCell align="right">금액</StyledTableCell>
+            <StyledTableCell align="right">매입일</StyledTableCell>
             <StyledTableCell align="right">액션</StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row, index) => (
+          {data.map((row, index) => (
             <StyledTableRow key={index}>
-              <StyledTableCell component="th" scope="row">
-                {row.name}
-              </StyledTableCell>
-              <StyledTableCell align="right">{row.phone}</StyledTableCell>
-              <StyledTableCell align="right">{row.status}</StyledTableCell>
-              <StyledTableCell align="right">{row.date}</StyledTableCell>
+              <StyledTableCell component="th" scope="row">{row.IMEI}</StyledTableCell>
+              <StyledTableCell align="right">{row.Carrier}</StyledTableCell>
+              <StyledTableCell align="right">{row.Series}</StyledTableCell>
+              <StyledTableCell align="right">{row.Model}</StyledTableCell>
+              <StyledTableCell align="right">{row.Size}</StyledTableCell>
+              <StyledTableCell align="right">{row.PaymentStatus === "Pending" ? "접수" : row.PaymentStatus}</StyledTableCell>
               <StyledTableCell align="right">
+                {row.PurchaseGrade}<br/>{row.PurchaseDetails}
+              </StyledTableCell>
+              <StyledTableCell align="right">{row.PurchasePrice.toLocaleString()}</StyledTableCell>
+              <StyledTableCell align="right">{new Date(row.CreatedAt).toLocaleString()}</StyledTableCell>
+              <StyledTableCell align="right">
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
                 <Button
                   variant="contained"
-                  color="primary"
-                  style={{ marginRight: '10px' }}
-                  onClick={() => handlePurchaseClick(row)}
+                  onClick={() => fetchPaymentInfo(row.PurchaseID)} // PurchaseID를 사용하여 결제 정보 조회
                 >
-                  수거하기
+                  상세
+                </Button>
+                <Button
+                  variant="contained"
+                  color = "success"
+                >
+                  수거
                 </Button>
                 <Button
                   variant="contained"
@@ -108,11 +178,13 @@ export default function DealerShopTableList() {
                 >
                   취소
                 </Button>
+                </div>
               </StyledTableCell>
             </StyledTableRow>
           ))}
         </TableBody>
       </Table>
+
       {/* 모달 컴포넌트 */}
       <Dialog
         open={openModal}
@@ -129,14 +201,21 @@ export default function DealerShopTableList() {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseModal} color="primary">
+          <Button onClick={handleCloseModal} color="error">
             Cancel
           </Button>
-          <Button onClick={handleConfirmCancel} color="primary" autoFocus>
+          <Button onClick={handleConfirmCancel} color="success" autoFocus>
             OK
           </Button>
         </DialogActions>
       </Dialog>
+
+      <PaymentInfoModal
+      open={paymentInfoModalOpen}
+      onClose={() => setPaymentInfoModalOpen(false)}
+      info={paymentInfo}
+      />      
+      
     </TableContainer>
   );
 }

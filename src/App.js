@@ -43,7 +43,7 @@ const App = () => {
           element={<DealerShopPurchaseList />}
         />
         <Route
-          path="/DealerShopPurchaseTargetList"
+          path="/DealerShopPurchaseTargetList/:shopID/:shopName"
           element={<DealerShopPurchaseTargetList />}
         />
         <Route path="/EnterIMEI" element={<EnterIMEI />} />
