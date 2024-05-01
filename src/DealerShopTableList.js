@@ -1,23 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { styled } from '@mui/material/styles';
 import {
-  Table,
-  TableBody,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Typography, Grid,IconButton 
+  Table, TableBody, TableContainer, TableHead, TableRow, Paper, Button, Typography, Grid
 } from '@mui/material';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import CloseIcon from '@mui/icons-material/Close';
 import { useAuth } from './contexts/AuthContext';
+import PurchaseInfoModal from './components/PurchaseInfoModal';
+import PaymentInfoModal from './components/PaymentInfoModal';
+import ConfirmationModal from './components/ConfirmationModal';
+import { fetchData } from './utils/fetchData';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -38,109 +29,84 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-export default function DealerShopTableList({data}) {
+const fieldNames = {
+  IMEI: 'IMEI',
+  Carrier: '제조사',
+  Series: '시리즈',
+  Model: '모델',
+  Size: '사이즈',
+  PaymentStatus: '상태',
+  PurchaseGrade: '등급/상세',
+  //PurchaseDetails: '등급상세',
+  PurchasePrice: '금액',
+  PurchaseETC: '기타',
+  CreatedAt: '매입일',
+  ETC: 'etc',
+};
 
-   // 데이터가 배열인지 확인 후 처리
-   if (!Array.isArray(data)) {
-    console.error('Expected an array but received:', data);
-    return <div></div>;
+export default function DealerShopTableList({ data, updateData }) {
+  const { authData } = useAuth();
+  const [modalInfo, setModalInfo] = useState({ open: false, type: '', data: {} });
+
+  if (!Array.isArray(data) || data.length === 0) {
+    return <Typography variant="h6" align="center">데이터가 없습니다.</Typography>;
   }
 
-  const [openModal, setOpenModal] = useState(false);
-
-  const handleCancelClick = () => {
-    setOpenModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setOpenModal(false);
-  };
-
-  const handleConfirmCancel = () => {
-    // 취소 확인 로직
-    setOpenModal(false);
-  };
-
-
-  const [paymentInfo, setPaymentInfo] = useState({});
-  const [paymentInfoModalOpen, setPaymentInfoModalOpen] = useState(false);
-  const [hasPaymentInfo, setHasPaymentInfo] = useState(true);
-
-  const fetchPaymentInfo = async (purchaseId) => {
-    try {
-      const response = await fetch(`http://127.0.0.1:8000/payment-info/purchase/${purchaseId}`);
-      if (response.status === 404) {
-        setHasPaymentInfo(false);
-        setPaymentInfoModalOpen(true);
-        return;
-      }
-      if (!response.ok) {
-        throw new Error('서버 통신에 문제가 발생했습니다.');
-      }
-      const data = await response.json();
-      setPaymentInfo(data);
-      setPaymentInfoModalOpen(true);
-      setHasPaymentInfo(true);
-    } catch (error) {
-      console.error('Fetching payment info failed:', error);
+  const handleOpenModal = (type, purchase) => {
+    if (type === 'cancel') {
+      setModalInfo({
+        open: true,
+        type,
+        data: purchase,
+        title: '정말 취소 하시겠습니까',
+        content: '이 작업은 되돌릴 수 없습니다.'
+      });
+    } else {
+      setModalInfo({ open: true, type, data: purchase });
     }
   };
 
-  const PaymentInfoModal = ({ open, onClose, info }) => (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>결제 정보 상세
-      <IconButton
-        aria-label="close"
-        onClick={onClose}
-        style={{ position: 'absolute', right: 8, top: 8, color: (theme) => theme.palette.grey[500] }}
-      >
-        <CloseIcon />
-      </IconButton>
-      </DialogTitle>
-      <DialogContent>
-        {hasPaymentInfo ? (
-          <Grid container spacing={2}>
-            <Grid item xs={6}><Typography variant="subtitle1" color="textSecondary">은행명</Typography></Grid>
-            <Grid item xs={6}><Typography variant="body1">{info.BankName}</Typography></Grid>
-            
-            <Grid item xs={6}><Typography variant="subtitle1" color="textSecondary">예금주</Typography></Grid>
-            <Grid item xs={6}><Typography variant="body1">{info.AccountHolder}</Typography></Grid>
-            
-            <Grid item xs={6}><Typography variant="subtitle1" color="textSecondary">계좌번호</Typography></Grid>
-            <Grid item xs={6}><Typography variant="body1">{info.AccountNumber}</Typography></Grid>
-            
-            <Grid item xs={6}><Typography variant="subtitle1" color="textSecondary">핸드폰 번호</Typography></Grid>
-            <Grid item xs={6}><Typography variant="body1">{info.PhoneNumber}</Typography></Grid>
-            
-            <Grid item xs={6}><Typography variant="subtitle1" color="textSecondary">기타</Typography></Grid>
-            <Grid item xs={6}><Typography variant="body1">{info.AdditionalInfo || ''}</Typography></Grid>
-          </Grid>
-        ) : (
-          <Typography>결제정보가 없습니다.</Typography>
-        )
+  const handleCloseModal = () => {
+    setModalInfo({ ...modalInfo, open: false });
+  };
+
+  const handleUpdateData = async (url, payload, successMessage, errorMessage) => {
+    console.log("handleUpdateData called with URL:", url);
+    console.log("Payload:", payload);
+    
+    try {
+      const response = await fetchData(url, payload, 'PUT');
+      console.log("HTTP Response:", response);
+      
+      if (response.ok) {
+        console.log("Response OK, updating data...");
+        updateData(data.filter(item => {
+          console.log(`Checking if PurchaseID ${item.PurchaseID} equals ${payload.PurchaseID}`);
+          return item.PurchaseID !== payload.PurchaseID;
+        }));
+        console.log("Data updated successfully.");
+        alert(successMessage);
+      } else {
+        console.log(`Response not OK, status: ${response.status}`);
+        alert(errorMessage);
       }
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="error">닫기</Button>
-      </DialogActions>
-    </Dialog>
-  );
+    } catch (error) {
+      console.error("Error in fetchData:", error);
+      alert(errorMessage);
+    } finally {
+      console.log("Closing modal...");
+      handleCloseModal();
+    }
+  };
 
   return (
     <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 700 }} aria-label="customized table">        
+      <Table sx={{ minWidth: 700 }} aria-label="customized table">
         <TableHead>
           <TableRow>
-            <StyledTableCell>IMEI</StyledTableCell>
-            <StyledTableCell align="right">제조사</StyledTableCell>
-            <StyledTableCell align="right">시리즈</StyledTableCell>
-            <StyledTableCell align="right">모델</StyledTableCell>
-            <StyledTableCell align="right">사이즈</StyledTableCell>
-            <StyledTableCell align="right">상태</StyledTableCell>
-            <StyledTableCell align="right">등급/상세</StyledTableCell>
-            <StyledTableCell align="right">금액</StyledTableCell>
-            <StyledTableCell align="right">매입일</StyledTableCell>
-            <StyledTableCell align="right">액션</StyledTableCell>
+            {Object.keys(fieldNames).map(key => (
+              <StyledTableCell key={key} align="right">{fieldNames[key]}</StyledTableCell>
+            ))}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -153,69 +119,31 @@ export default function DealerShopTableList({data}) {
               <StyledTableCell align="right">{row.Size}</StyledTableCell>
               <StyledTableCell align="right">{row.PaymentStatus === "Pending" ? "접수" : row.PaymentStatus}</StyledTableCell>
               <StyledTableCell align="right">
-                {row.PurchaseGrade}<br/>{row.PurchaseDetails}
+                {row.PurchaseGrade}<br />{row.PurchaseDetails}
               </StyledTableCell>
               <StyledTableCell align="right">{row.PurchasePrice.toLocaleString()}</StyledTableCell>
+              <StyledTableCell align="right">{row.PurchaseETC}</StyledTableCell>
               <StyledTableCell align="right">{new Date(row.CreatedAt).toLocaleString()}</StyledTableCell>
               <StyledTableCell align="right">
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                <Button
-                  variant="contained"
-                  onClick={() => fetchPaymentInfo(row.PurchaseID)} // PurchaseID를 사용하여 결제 정보 조회
-                >
-                  상세
-                </Button>
-                <Button
-                  variant="contained"
-                  color = "success"
-                >
-                  수거
-                </Button>
-                <Button
-                  variant="contained"
-                  color="error"
-                  onClick={handleCancelClick}
-                >
-                  취소
-                </Button>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                  <Button variant="contained" onClick={() => handleOpenModal('detail', row)}>상세</Button>
+                  <Button variant="contained" color="success" onClick={() => handleOpenModal('edit', row)}>수거</Button>
+                  <Button variant="contained" color="error" onClick={() => handleOpenModal('cancel', row)}>취소</Button>
                 </div>
               </StyledTableCell>
             </StyledTableRow>
           ))}
         </TableBody>
       </Table>
-
-      {/* 모달 컴포넌트 */}
-      <Dialog
-        open={openModal}
-        onClose={handleCloseModal}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {'정말 취소 하시겠습니까?'}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            이 작업은 되돌릴 수 없습니다.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseModal} color="error">
-            Cancel
-          </Button>
-          <Button onClick={handleConfirmCancel} color="success" autoFocus>
-            OK
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <PaymentInfoModal
-      open={paymentInfoModalOpen}
-      onClose={() => setPaymentInfoModalOpen(false)}
-      info={paymentInfo}
-      />      
-      
+      {modalInfo.open && (
+        modalInfo.type === 'detail' ? (
+          <PaymentInfoModal open={modalInfo.open} onClose={handleCloseModal} info={modalInfo.data} />
+        ) : modalInfo.type === 'edit' ? (
+          <PurchaseInfoModal open={modalInfo.open} onClose={handleCloseModal} purchase={modalInfo.data} onConfirm={handleUpdateData} />
+        ) : (
+          <ConfirmationModal open={modalInfo.open} onClose={handleCloseModal} purchase={modalInfo.data} onConfirm={handleUpdateData} title={modalInfo.title} content={modalInfo.content}  />
+        )
+      )}
     </TableContainer>
   );
 }

@@ -18,6 +18,8 @@ import {
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import CloseIcon from '@mui/icons-material/Close';
 import { useAuth } from './contexts/AuthContext';
+import { fetchData } from './utils/fetchData';  // fetchData 함수를 가져옵니다.
+import { useSnackbar } from './contexts/SnackbarProvider';  // 훅을 가져옵니다.
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -38,11 +40,16 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-export default function PurchaseListTable({data}) {
 
+export default function PurchaseListTable({data, onDeletePurchase }) {
+
+  const { authData } = useAuth(); // 현재 로그인된 사용자의 인증 데이터 사용
   const [openModal, setOpenModal] = useState(false);
+  const [selectedPurchase, setSelectedPurchase] = useState(null); // 선택된 구매 정보 상태
+  const { openSnackbar } = useSnackbar();  // 훅을 사용하여 스낵바 열기 함수를 가져옵니다.
 
-  const handleCancelClick = () => {
+  const handleCancelClick = (purchase) => {
+    setSelectedPurchase(purchase); // 선택된 구매 정보를 상태에 저장
     setOpenModal(true);
   };
 
@@ -50,9 +57,31 @@ export default function PurchaseListTable({data}) {
     setOpenModal(false);
   };
 
-  const handleConfirmCancel = () => {
-    // 취소 확인 로직
-    setOpenModal(false);
+  const handleConfirmCancel = async () => {
+    if (selectedPurchase) {
+      const url = `http://127.0.0.1:8000/purchases/${selectedPurchase.PurchaseID}`;
+      const payload = {
+        ...selectedPurchase,
+        UserID: authData.UserID,
+        PaymentStatus: "딜러매입취소",
+        IsDeleted: true
+      };
+  
+      try {
+        // fetchData 함수를 사용하여 API 호출
+        const response = await fetchData(url, payload, 'PUT');
+        if (response.ok) {
+          openSnackbar("성공적으로 취소 되었습니다.");
+          onDeletePurchase(selectedPurchase.PurchaseID); // 삭제 성공 시 부모 컴포넌트에 알림
+        } else {
+          throw new Error(`Failed to cancel purchase: ${response.status}`);
+        }
+      } catch (error) {
+        console.error('Error cancelling purchase:', error);
+      } finally {
+        handleCloseModal();
+      }
+    }
   };
 
 
@@ -162,7 +191,7 @@ export default function PurchaseListTable({data}) {
                 <Button
                   variant="contained"
                   color="error"
-                  onClick={handleCancelClick}
+                  onClick={() => handleCancelClick(row)}
                 >
                   취소
                 </Button>
@@ -189,11 +218,11 @@ export default function PurchaseListTable({data}) {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseModal} color="error">
-            Cancel
+        <Button onClick={handleConfirmCancel} color="primary" autoFocus>
+            완료
           </Button>
-          <Button onClick={handleConfirmCancel} color="success" autoFocus>
-            OK
+          <Button onClick={handleCloseModal} color="error">
+            취소
           </Button>
         </DialogActions>
       </Dialog>

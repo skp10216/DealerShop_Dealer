@@ -36,9 +36,11 @@ export default function DealerShopPurchaseList() {
 
         const purchasesResponse = await fetch(`http://127.0.0.1:8000/purchases/shops/${authData.UserID}/counts`);
         const purchasesData = await purchasesResponse.json();
+
+        console.log('purchasesData', purchasesData);
         setPurchaseCounts(purchasesData);
       } catch (error) {
-        console.error('Failed to fetch data:', error);
+        console.error('Failed to fetch data:', error); 
       }
     };
 

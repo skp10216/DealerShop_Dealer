@@ -14,8 +14,13 @@ export default function DealerShopPurchaseTargetList() {
   const navigate = useNavigate();
   const { shopID,shopName  } = useParams();
   const [purchaseData, setPurchaseData] = useState([]);
-  const decodedShopName = decodeURIComponent(shopName);  // Decoding shopName
+  const decodedShopName = decodeURIComponent(shopName);  
   const [totalCount, setTotalCount] = useState(0);
+
+  function updatePurchaseData(updatedData) {
+    setPurchaseData(updatedData);
+    setTotalCount(updatedData.length);
+  }
 
   useEffect(() => {
     async function fetchPurchases() {
@@ -63,7 +68,7 @@ export default function DealerShopPurchaseTargetList() {
           </List>
         </nav>
         <Divider />
-        <DealerShopTableList data={purchaseData} />
+        <DealerShopTableList data={purchaseData} updateData = {updatePurchaseData} />
       </Box>
     </CommonLayout>
   );

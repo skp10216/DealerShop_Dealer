@@ -54,7 +54,7 @@ export default function PurchaseConfirm() {
         UserID: authData.UserID, 
         DealershipID: data.dealershipID,
         PhoneID: 0, //임시
-        PaymentStatus: "Pending", 
+        PaymentStatus: "딜러매입", 
         PurchaseGrade: data.purchaseGrade,
         PurchaseDetails: data.purchaseDetails.join(", "),
         PurchasePrice: purchasePrice,
@@ -142,6 +142,13 @@ export default function PurchaseConfirm() {
               <ListItemText
                 primary="검수 등급 상세"
                 secondary={<Typography component="span" style={textStyle.secondary}>{data.purchaseDetails}</Typography>}
+              />
+            </ListItem>
+            <Divider />
+            <ListItem>
+              <ListItemText
+                primary="금액"
+                secondary={<Typography component="span" style={textStyle.secondary}>{data.purchasePrice}</Typography>}
               />
             </ListItem>
             <Divider />
