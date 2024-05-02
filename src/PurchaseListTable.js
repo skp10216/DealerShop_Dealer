@@ -1,55 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { styled } from '@mui/material/styles';
+import React, { useState } from 'react';
+import { DataGrid, GridToolbarContainer, GridToolbarExport } from '@mui/x-data-grid';
 import {
-  Table,
-  TableBody,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Typography, Grid,IconButton 
+  Button, Dialog, DialogActions, DialogContent,
+  DialogContentText, DialogTitle, Typography, Grid, IconButton, Box
 } from '@mui/material';
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import CloseIcon from '@mui/icons-material/Close';
 import { useAuth } from './contexts/AuthContext';
-import { fetchData } from './utils/fetchData';  // fetchData 함수를 가져옵니다.
-import { useSnackbar } from './contexts/SnackbarProvider';  // 훅을 가져옵니다.
+import { fetchData } from './utils/fetchData';
+import { useSnackbar } from './contexts/SnackbarProvider';
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  '&:nth-of-type(odd)': {
-    backgroundColor: theme.palette.action.hover,
-  },
-  '&:last-child td, &:last-child th': {
-    border: 0,
-  },
-}));
-
-
-export default function PurchaseListTable({data, onDeletePurchase }) {
-
-  const { authData } = useAuth(); // 현재 로그인된 사용자의 인증 데이터 사용
+export default function PurchaseListTable({ data, onDeletePurchase }) {
+  const { authData } = useAuth();
   const [openModal, setOpenModal] = useState(false);
-  const [selectedPurchase, setSelectedPurchase] = useState(null); // 선택된 구매 정보 상태
-  const { openSnackbar } = useSnackbar();  // 훅을 사용하여 스낵바 열기 함수를 가져옵니다.
+  const [selectedPurchase, setSelectedPurchase] = useState(null);
+  const { openSnackbar } = useSnackbar();
 
   const handleCancelClick = (purchase) => {
-    setSelectedPurchase(purchase); // 선택된 구매 정보를 상태에 저장
+    setSelectedPurchase(purchase);
     setOpenModal(true);
   };
 
@@ -68,11 +35,10 @@ export default function PurchaseListTable({data, onDeletePurchase }) {
       };
   
       try {
-        // fetchData 함수를 사용하여 API 호출
         const response = await fetchData(url, payload, 'PUT');
         if (response.ok) {
           openSnackbar("성공적으로 취소 되었습니다.");
-          onDeletePurchase(selectedPurchase.PurchaseID); // 삭제 성공 시 부모 컴포넌트에 알림
+          onDeletePurchase(selectedPurchase.PurchaseID);
         } else {
           throw new Error(`Failed to cancel purchase: ${response.status}`);
         }
@@ -83,7 +49,6 @@ export default function PurchaseListTable({data, onDeletePurchase }) {
       }
     }
   };
-
 
   const [paymentInfo, setPaymentInfo] = useState({});
   const [paymentInfoModalOpen, setPaymentInfoModalOpen] = useState(false);
@@ -112,13 +77,13 @@ export default function PurchaseListTable({data, onDeletePurchase }) {
   const PaymentInfoModal = ({ open, onClose, info }) => (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>결제 정보 상세
-      <IconButton
-        aria-label="close"
-        onClick={onClose}
-        style={{ position: 'absolute', right: 8, top: 8, color: (theme) => theme.palette.grey[500] }}
-      >
-        <CloseIcon />
-      </IconButton>
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          style={{ position: 'absolute', right: 8, top: 8, color: (theme) => theme.palette.grey[500] }}
+        >
+          <CloseIcon />
+        </IconButton>
       </DialogTitle>
       <DialogContent>
         {hasPaymentInfo ? (
@@ -149,60 +114,47 @@ export default function PurchaseListTable({data, onDeletePurchase }) {
     </Dialog>
   );
 
-  return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 700 }} aria-label="customized table">        
-        <TableHead>
-          <TableRow>
-            <StyledTableCell>IMEI</StyledTableCell>
-            <StyledTableCell align="right">제조사</StyledTableCell>
-            <StyledTableCell align="right">시리즈</StyledTableCell>
-            <StyledTableCell align="right">모델</StyledTableCell>
-            <StyledTableCell align="right">사이즈</StyledTableCell>
-            <StyledTableCell align="right">상태</StyledTableCell>
-            <StyledTableCell align="right">등급/상세</StyledTableCell>
-            <StyledTableCell align="right">금액</StyledTableCell>
-            <StyledTableCell align="right">매입일</StyledTableCell>
-            <StyledTableCell align="right">액션</StyledTableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {data.map((row, index) => (
-            <StyledTableRow key={index}>
-              <StyledTableCell component="th" scope="row">{row.IMEI}</StyledTableCell>
-              <StyledTableCell align="right">{row.Carrier}</StyledTableCell>
-              <StyledTableCell align="right">{row.Series}</StyledTableCell>
-              <StyledTableCell align="right">{row.Model}</StyledTableCell>
-              <StyledTableCell align="right">{row.Size}</StyledTableCell>
-              <StyledTableCell align="right">{row.PaymentStatus === "Pending" ? "접수" : row.PaymentStatus}</StyledTableCell>
-              <StyledTableCell align="right">
-                {row.PurchaseGrade}<br/>{row.PurchaseDetails}
-              </StyledTableCell>
-              <StyledTableCell align="right">{row.PurchasePrice.toLocaleString()}</StyledTableCell>
-              <StyledTableCell align="right">{new Date(row.CreatedAt).toLocaleString()}</StyledTableCell>
-              <StyledTableCell align="right">
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                <Button
-                  variant="contained"
-                  onClick={() => fetchPaymentInfo(row.PurchaseID)} // PurchaseID를 사용하여 결제 정보 조회
-                >
-                  상세
-                </Button>
-                <Button
-                  variant="contained"
-                  color="error"
-                  onClick={() => handleCancelClick(row)}
-                >
-                  취소
-                </Button>
-                </div>
-              </StyledTableCell>
-            </StyledTableRow>
-          ))}
-        </TableBody>
-      </Table>
+  const columns = [
+    { field: 'IMEI', headerName: 'IMEI', flex: 1 },
+    { field: 'Carrier', headerName: '제조사', flex: 1 },
+    { field: 'Series', headerName: '시리즈', flex: 1 },
+    { field: 'Model', headerName: '모델', flex: 1 },
+    { field: 'Size', headerName: '사이즈', flex: 1 },
+    { field: 'PaymentStatus', headerName: '상태', flex: 1, renderCell: (params) => params.value === "Pending" ? "접수" : params.value },
+    { field: 'PurchaseGradeDetails', headerName: '등급/상세', flex: 1, renderCell: (params) => `${params.row.PurchaseGrade}\n${params.row.PurchaseDetails}` },
+    { field: 'PurchasePrice', headerName: '금액', flex: 1, valueFormatter: (params) => params.value },
+    { field: 'CreatedAt', headerName: '매입일', flex: 1 },
+    {
+      field: 'actions', headerName: '액션', flex: 1, renderCell: (params) => (
+        <Box sx={{ display: 'flex', gap: '10px', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+          <Button
+            variant="contained"
+            onClick={() => fetchPaymentInfo(params.row.PurchaseID)}
+          >
+            상세
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => handleCancelClick(params.row)}
+          >
+            삭제
+          </Button>
+        </Box>
+      ),
+     
+    }
+  ];
 
-      {/* 모달 컴포넌트 */}
+  return (
+    <div style={{ height: '90vh', width: '100%' }}>
+      <DataGrid
+        rows={data}
+        columns={columns}
+        pageSize={10}
+        getRowId={(row) => row.PurchaseID}
+        checkboxSelection
+      />
       <Dialog
         open={openModal}
         onClose={handleCloseModal}
@@ -210,7 +162,7 @@ export default function PurchaseListTable({data, onDeletePurchase }) {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {'정말 취소 하시겠습니까?'}
+          {'정말 삭제 하시겠습니까?'}
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
@@ -218,21 +170,19 @@ export default function PurchaseListTable({data, onDeletePurchase }) {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-        <Button onClick={handleConfirmCancel} color="primary" autoFocus>
-            완료
+          <Button onClick={handleConfirmCancel} color="primary" autoFocus>
+            삭제
           </Button>
           <Button onClick={handleCloseModal} color="error">
             취소
           </Button>
         </DialogActions>
       </Dialog>
-
       <PaymentInfoModal
-      open={paymentInfoModalOpen}
-      onClose={() => setPaymentInfoModalOpen(false)}
-      info={paymentInfo}
-      />      
-      
-    </TableContainer>
+        open={paymentInfoModalOpen}
+        onClose={() => setPaymentInfoModalOpen(false)}
+        info={paymentInfo}
+      />
+    </div>
   );
 }

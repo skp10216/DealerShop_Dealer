@@ -44,7 +44,7 @@ const ConfirmationModal = ({ open, onClose, purchase, onConfirm, title, content 
       </DialogContent>
       <DialogActions>
       <Button onClick={handleConfirm} color="primary" autoFocus>
-          완료
+          삭제
         </Button>
         <Button onClick={onClose} color="error">
           취소

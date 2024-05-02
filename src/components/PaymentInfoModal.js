@@ -6,33 +6,36 @@ import CloseIcon from '@mui/icons-material/Close';
 import { fetchData } from '../utils/fetchData';  // fetchData 함수를 가져옵니다.
 
 const PaymentInfoModal = ({ open, onClose, info }) => {
-  const [paymentDetails, setPaymentDetails] = useState(null);
+
+  const [paymentDetails, setPaymentDetails] = useState({});
 
   useEffect(() => {
     const fetchPaymentDetails = async () => {
       if (info && info.PurchaseID) {
         const url = `http://127.0.0.1:8000/payment-info/purchase/${info.PurchaseID}`;
         try {
-          const data = await fetchData(url, {}, 'GET');
-          console.log('fetchPaymentDetails data', data);
-          // 데이터 유효성 검증: AccountHolder와 BankName 확인
-          if (data && data.AccountHolder && data.BankName) {
-            setPaymentDetails(data);
-          } else {
-            // 유효하지 않은 데이터
-            throw new Error('No valid data returned');
-          }
+          const data = (await fetchData(url, {}, 'GET'));
+          console.log('Received data:', data);
+          // 상태 업데이트 문제 해결
+          setPaymentDetails(data.data);
+
         } catch (error) {
           console.error('Error fetching payment details:', error);
-          setPaymentDetails(null);  // 실패 시 paymentDetails를 null로 설정
+          setPaymentDetails(null);
         }
+      } else {
+        // `info`가 유효하지 않을 때 상태 초기화
+        setPaymentDetails(null);
       }
     };
 
     if (open) {
       fetchPaymentDetails();
+    } else {
+      // 모달이 닫히면 상태 초기화
+      setPaymentDetails(null);
     }
-  }, [info, open]);  // 의존성 배열에 'info'와 'open'을 추가
+  }, [info, open]);
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>

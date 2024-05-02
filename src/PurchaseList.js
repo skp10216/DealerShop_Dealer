@@ -11,7 +11,7 @@ import { useAuth } from './contexts/AuthContext';
 import MenuIcon from '@mui/icons-material/Menu';
 import paymentStatusOptions from './utils/paymentStatusOptions';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'; // 수정된 부분
 
 const PurchaseList = () => {
     const navigate = useNavigate();
@@ -81,7 +81,7 @@ const PurchaseList = () => {
         <CommonLayout title="매입 리스트" icon={<ArrowBackIcon onClick={() => navigate(-1)} />}>
             <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
                 <List>
-                    <ListItem disablePadding>
+                    <ListItem >
                         <MenuIcon color="primary" fontSize="large" />
                         <ListItemText 
                             primary={`매입 (총 ${filteredData.length}건)`} 

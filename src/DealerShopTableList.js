@@ -128,7 +128,7 @@ export default function DealerShopTableList({ data, updateData }) {
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
                   <Button variant="contained" onClick={() => handleOpenModal('detail', row)}>상세</Button>
                   <Button variant="contained" color="success" onClick={() => handleOpenModal('edit', row)}>수거</Button>
-                  <Button variant="contained" color="error" onClick={() => handleOpenModal('cancel', row)}>취소</Button>
+                  <Button variant="contained" color="error" onClick={() => handleOpenModal('cancel', row)}>삭제</Button>
                 </div>
               </StyledTableCell>
             </StyledTableRow>
