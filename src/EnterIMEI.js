@@ -71,6 +71,12 @@ export default function EnterIMEI() {
     updateData('dealershipID', ShopId);  // 선택된 dealershipID를 업데이트
   };
 
+  useEffect(() => {
+    if (imeiInputRef.current) {
+      imeiInputRef.current.focus();
+    }
+  }, []);
+
   return (
     <CommonLayout title="IMEI 입력" icon={<ArrowBackIcon onClick={() => navigate(-1)} />}>
       <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>

@@ -63,7 +63,7 @@ export default function DealerShopPurchaseList() {
 
   return (
     <CommonLayout
-      title="수거대상 대리점 선택"
+      title="매입대상 대리점 선택"
       icon={<ArrowBackIcon onClick={() => navigate(-1)} />}
     >
       <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
@@ -74,7 +74,7 @@ export default function DealerShopPurchaseList() {
                 <StoreMallDirectoryIcon color="primary" fontSize="large" />
               </ListItemIcon>
               <ListItemText primary="대리점 목록" />
-              수거 대리점 목록<Checkbox
+              매입 대리점 목록<Checkbox
                 checked={filterActive}
                 onChange={handleCheckboxChange}
               />

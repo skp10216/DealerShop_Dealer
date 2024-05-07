@@ -58,7 +58,8 @@ export default function PurchaseConfirm() {
         PurchaseGrade: data.purchaseGrade,
         PurchaseDetails: data.purchaseDetails.join(", "),
         PurchasePrice: purchasePrice,
-        PurchaseETC : data.purchaseETC
+        PurchaseETC : data.purchaseETC,
+        PurchaseDate: new Date()
       }
       
       const payment_info_data = {

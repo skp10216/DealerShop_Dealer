@@ -9,6 +9,7 @@ import PurchaseInfoModal from './components/PurchaseInfoModal';
 import PaymentInfoModal from './components/PaymentInfoModal';
 import ConfirmationModal from './components/ConfirmationModal';
 import { fetchData } from './utils/fetchData';
+import {formatDate} from './utils/dateUtils';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -40,7 +41,7 @@ const fieldNames = {
   //PurchaseDetails: '등급상세',
   PurchasePrice: '금액',
   PurchaseETC: '기타',
-  CreatedAt: '매입일',
+  CreatedAt: '등록일',
   ETC: 'etc',
 };
 
@@ -123,7 +124,7 @@ export default function DealerShopTableList({ data, updateData }) {
               </StyledTableCell>
               <StyledTableCell align="right">{row.PurchasePrice.toLocaleString()}</StyledTableCell>
               <StyledTableCell align="right">{row.PurchaseETC}</StyledTableCell>
-              <StyledTableCell align="right">{new Date(row.CreatedAt).toLocaleString()}</StyledTableCell>
+              <StyledTableCell align="right">{formatDate(row.CreatedAt)}</StyledTableCell>
               <StyledTableCell align="right">
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
                   <Button variant="contained" onClick={() => handleOpenModal('detail', row)}>상세</Button>

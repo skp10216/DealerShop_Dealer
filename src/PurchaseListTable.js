@@ -8,6 +8,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useAuth } from './contexts/AuthContext';
 import { fetchData } from './utils/fetchData';
 import { useSnackbar } from './contexts/SnackbarProvider';
+import { formatDate } from './utils/dateUtils';
 
 export default function PurchaseListTable({ data, onDeletePurchase }) {
   const { authData } = useAuth();
@@ -115,15 +116,20 @@ export default function PurchaseListTable({ data, onDeletePurchase }) {
   );
 
   const columns = [
-    { field: 'IMEI', headerName: 'IMEI', flex: 1 },
+    { field: 'IMEI', headerName: 'IMEI', flex: 1},
     { field: 'Carrier', headerName: '제조사', flex: 1 },
     { field: 'Series', headerName: '시리즈', flex: 1 },
     { field: 'Model', headerName: '모델', flex: 1 },
     { field: 'Size', headerName: '사이즈', flex: 1 },
-    { field: 'PaymentStatus', headerName: '상태', flex: 1, renderCell: (params) => params.value === "Pending" ? "접수" : params.value },
+    { field: 'PaymentStatus', headerName: '상태', flex: 1, renderCell: (params) => params.value  },
     { field: 'PurchaseGradeDetails', headerName: '등급/상세', flex: 1, renderCell: (params) => `${params.row.PurchaseGrade}\n${params.row.PurchaseDetails}` },
-    { field: 'PurchasePrice', headerName: '금액', flex: 1, valueFormatter: (params) => params.value },
-    { field: 'CreatedAt', headerName: '매입일', flex: 1 },
+    { field: 'PurchasePrice', headerName: '금액', flex: 1, renderCell: (params) => {
+      const formattedPrice = new Intl.NumberFormat('ko-KR', {
+        currency: 'KRW',
+      }).format(params.value);
+      return formattedPrice;
+    },},
+    { field: 'PurchaseDate', headerName: '매입일', flex: 1, renderCell: (params) => formatDate(params.value) },
     {
       field: 'actions', headerName: '액션', flex: 1, renderCell: (params) => (
         <Box sx={{ display: 'flex', gap: '10px', justifyContent: 'center', alignItems: 'center', width: '100%' }}>

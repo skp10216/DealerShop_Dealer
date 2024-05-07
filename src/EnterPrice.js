@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import CommonLayout from './CommonLayout';
 import { useData } from './contexts/PurchaseDataContext';
 import { useAuth } from './contexts/AuthContext';
+import { handleNumericInput } from './utils/dateUtils';
 
 export default function EnterPrice() {
   const navigate = useNavigate();
@@ -74,10 +75,8 @@ export default function EnterPrice() {
   };
 
   const handlePriceChange = (event) => {
-    const value = event.target.value.replace(/,/g, '');
-    if (value === '' || /^[0-9\b]+$/.test(value)) {
-      setPrice(new Intl.NumberFormat('en-US').format(value));
-    }
+    const value = event.target.value;
+    handleNumericInput(value, setPrice); // setPrice는 해당 컴포넌트에서 상태를 업데이트하는 함수여야 합니다.
   };
 
   return (

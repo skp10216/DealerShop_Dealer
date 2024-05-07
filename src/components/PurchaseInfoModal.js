@@ -4,6 +4,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useAuth } from '../contexts/AuthContext';
+import { formatDate } from '../utils/dateUtils';
 
 const fieldNames = {
   Carrier: '제조사',
@@ -15,7 +16,8 @@ const fieldNames = {
   PurchaseDetails: '등급상세',
   PurchasePrice: '금액',
   PurchaseETC: '기타',
-  CreatedAt: '매입일'
+  CreatedAt: '등록일',
+  PurchaseDate: '매입일'
 };
 
 const PurchaseInfoModal = ({ open, onClose, purchase, onConfirm }) => {
@@ -47,13 +49,14 @@ const PurchaseInfoModal = ({ open, onClose, purchase, onConfirm }) => {
         </IconButton>
       </DialogTitle>
       <DialogContent>
-        <Grid container spacing={2}>
-           {Object.entries(purchase).map(([key, value]) => {
+      <Grid container spacing={2}>
+          {Object.entries(purchase).map(([key, value]) => {
             if (!['PurchaseID', 'DealershipID', 'UserID', 'PhoneID', 'IsDeleted'].includes(key)) {
+              const formattedValue = (key === 'CreatedAt' || key === 'PurchaseDate') ? formatDate(value) : value;
               return (
                 <React.Fragment key={key}>
                   <Grid item xs={6}><Typography variant="subtitle1">{fieldNames[key] || key}</Typography></Grid>
-                  <Grid item xs={6}><Typography variant="body1">{value}</Typography></Grid>
+                  <Grid item xs={6}><Typography variant="body1">{formattedValue}</Typography></Grid>
                 </React.Fragment>
               );
             }
