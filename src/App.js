@@ -5,19 +5,19 @@ import {
   Routes,
   Navigate,
 } from 'react-router-dom';
-import LoginPage from './LoginPage';
-import MainPage from './DealerShopMainPage';
-import DealerShopListPage from './DealerShopListPage';
-import DealerShopCreatePage from './DealerShopCreatePage';
-import DealerShopUpdatePage from './DealerShopUpdatePage';
-import DealerShopPurchaseList from './DealerShopPurchaseList';
-import DealerShopPurchaseTargetList from './DealerShopPurchaseTargetList';
-import EnterIMEI from './EnterIMEI';
-import EnterPhoneInfo from './EnterPhoneInfo';
-import EnterInspection from './EnterInspection';
-import EnterPrice from './EnterPrice';
-import PurchaseConfirm from './PurchaseConfirm';
-import PurchaseList from './PurchaseList';
+import LoginPage from './pages/LoginPage';
+import MainPage from './pages/DealerShopMainPage';
+import DealerShopListPage from './pages/DealerShopListPage';
+import DealerShopCreatePage from './pages/DealerShopCreatePage';
+import DealerShopUpdatePage from './pages/DealerShopUpdatePage';
+import DealerShopPurchaseList from './pages/DealerShopPurchaseList';
+import DealerShopPurchaseTargetList from './pages/DealerShopPurchaseTargetList';
+import EnterIMEI from './pages/EnterIMEI';
+import EnterPhoneInfo from './pages/EnterPhoneInfo';
+import EnterInspection from './pages/EnterInspection';
+import EnterPrice from './pages/EnterPrice';
+import PurchaseConfirm from './pages/PurchaseConfirm';
+import PurchaseList from './pages/PurchaseList';
 import { DataProvider } from './contexts/PurchaseDataContext';
 import { AuthProvider} from './contexts/AuthContext'
 
