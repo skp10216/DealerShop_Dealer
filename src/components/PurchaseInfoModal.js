@@ -51,7 +51,7 @@ const PurchaseInfoModal = ({ open, onClose, purchase, onConfirm }) => {
       <DialogContent>
       <Grid container spacing={2}>
           {Object.entries(purchase).map(([key, value]) => {
-            if (!['PurchaseID', 'DealershipID', 'UserID', 'PhoneID', 'IsDeleted'].includes(key)) {
+            if (!['PurchaseID', 'DealershipID', 'UserID', 'PhoneID', 'IsDeleted', 'ShopID', 'ShopName'].includes(key)) {
               const formattedValue = (key === 'CreatedAt' || key === 'PurchaseDate') ? formatDate(value) : value;
               return (
                 <React.Fragment key={key}>

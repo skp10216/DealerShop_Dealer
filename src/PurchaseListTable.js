@@ -117,6 +117,7 @@ export default function PurchaseListTable({ data, onDeletePurchase }) {
 
   const columns = [
     { field: 'IMEI', headerName: 'IMEI', flex: 1},
+    { field: 'ShopName', headerName: '매입처', flex: 1},
     { field: 'Carrier', headerName: '제조사', flex: 1 },
     { field: 'Series', headerName: '시리즈', flex: 1 },
     { field: 'Model', headerName: '모델', flex: 1 },

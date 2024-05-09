@@ -104,14 +104,14 @@ export default function EnterInspection() {
           <Typography variant="h6">최종 등급: {data.purchaseGrade || ""}</Typography>
           <Typography variant="h6">최종 등급 상세:{data.purchaseDetails || ""} </Typography>
 
-          {/* 전역 데이터 전체 출력 */}
+          {/* 전역 데이터 전체 출력
           <Typography sx={{ mt: 2 }} variant="h6">전역 데이터:</Typography>
           <Paper variant="outlined" sx={{ mt: 1, p: 2 }}>
             {Object.entries(data).map(([key, value]) => (
               <Typography key={key}>{`${key}: ${Array.isArray(value) ? value.join(', ') : value}`}</Typography>
             ))}
           </Paper>
-
+          */}
 
         </Box>
         <Box position="fixed" bottom={0} left={0} right={0}>

@@ -9,6 +9,8 @@ import {
   Container,
   Card,
   CardContent,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import { useNavigate } from 'react-router-dom';
@@ -18,6 +20,8 @@ import { useAuth } from './contexts/AuthContext';
 export default function MainPage() {
   const navigate = useNavigate();
   const { authData } = useAuth();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const handleNavigation = (path) => {
     navigate(path);
@@ -25,7 +29,7 @@ export default function MainPage() {
 
   return (
     <CommonLayout title="딜러마켓" icon={<HomeIcon />} onSettingsClick={() => handleNavigation('/Settings')}>
-      <Container>
+      <Container maxWidth="md">
         {authData && (
           <Typography variant="h6" style={{ margin: '20px 0', color: '#333' }}>
             안녕하세요, {authData.Username}님!
@@ -40,7 +44,8 @@ export default function MainPage() {
             '&:hover': {
               transform: 'scale(1.05)',
               boxShadow: 6,
-            }
+            },
+            width: isMobile ? '100%' : 200  // 동적 너비 조정
           }}>
             <CardContent>
               <Typography variant="h4" sx={{ color: '#fff', fontWeight: 'bold', p: 2 }}>

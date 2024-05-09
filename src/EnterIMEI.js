@@ -18,15 +18,15 @@ export default function EnterIMEI() {
   const imeiInputRef = useRef(null);
   const [isError, setIsError] = useState(false);
   const [isDealership, setIsDealership] = useState(false);
-  const [dealers, setDealers] = useState([]);
-  const [selectedDealer, setSelectedDealer] = useState('');
+  const [shops, setShops] = useState([]);
+  const [selectedShop, setSelectedShop] = useState('');
 
   const fetchDealers = async () => {
     const url = `http://127.0.0.1:8000/shops/user/${authData.UserID}`;
     try {
       const response = await fetch(url);
       const data = await response.json();
-      setDealers(data || []); // 불러온 데이터로 상태 업데이트
+      setShops(data || []); // 불러온 데이터로 상태 업데이트
       console.log("Fetched dealers data: ", data);
     } catch (error) {
       console.error("Failed to fetch dealers", error);
@@ -58,17 +58,21 @@ export default function EnterIMEI() {
     if (event.target.checked) {
       fetchDealers();
     } else {
-      setDealers([]);
-      setSelectedDealer('');
+      setShops([]);
+      setSelectedShop('');
       updateData('dealershipID', null);  // 체크박스 해제 시 dealershipID를 NULL로 초기화
     }
   };
 
   const handleDealerChange = (event) => {
     console.log("Selected dealer ID:", event.target.value);  // 로그로 선택된 값 확인
-    const ShopId = event.target.value;
-    setSelectedDealer(ShopId);
-    updateData('dealershipID', ShopId);  // 선택된 dealershipID를 업데이트
+
+    const shopId = event.target.value;  // 문자열을 숫자로 변환    
+    const selectedShopName = shops.find((shop) => shop.ShopID === shopId)?.ShopName || '';
+    setSelectedShop(shopId);
+    updateData('dealershipID', shopId);  // 선택된 dealershipID를 업데이트
+    updateData('shopName', selectedShopName);  
+    
   };
 
   useEffect(() => {
@@ -105,12 +109,12 @@ export default function EnterIMEI() {
                 <Select
                   labelId="dealer-select-label"
                   id="dealer-select"
-                  value={selectedDealer}
+                  value={selectedShop} 
                   label="대리점 선택"
                   onChange={handleDealerChange}
                 >
-                  {dealers.map((dealer) => (
-                    <MenuItem key={dealer.ShopID} value={dealer.ShopID}>{`ID: ${dealer.ShopID}, 이름: ${dealer.ShopName}`}</MenuItem>
+                  {shops.map((shop) => (
+                    <MenuItem key={shop.ShopID} value={shop.ShopID}>{`ID: ${shop.ShopID}, 이름: ${shop.ShopName}`}</MenuItem>
                   ))}
                 </Select>
               </FormControl>

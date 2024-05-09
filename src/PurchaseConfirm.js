@@ -118,6 +118,20 @@ export default function PurchaseConfirm() {
             </ListItem>
             <Divider />
             {/* 리스트 아이템들 구성 */}
+
+            {/* ShopName 항목 추가 */}
+             {data.dealershipID && (
+              <>
+                <ListItem>
+                  <ListItemText
+                    primary="매입 대리점"
+                    secondary={<Typography component="span" style={textStyle.secondary}>{data.shopName}</Typography>}
+                  />
+                </ListItem>
+                <Divider />
+              </>
+            )}
+
             <ListItem>
               <ListItemText
                 primary="IMEI"
@@ -154,33 +168,33 @@ export default function PurchaseConfirm() {
             </ListItem>
             <Divider />
             <ListItem>        
-        <ListItemText
-          primary="은행명"
-          secondary={<Typography component="span" style={textStyle.secondary}>{data.bankName}</Typography>}
-        />
-      </ListItem>
-      <Divider />
-      <ListItem>
-        <ListItemText
-          primary="계좌번호"
-          secondary={<Typography component="span" style={textStyle.secondary}>{data.accountNumber}</Typography>}
-        />
-      </ListItem>
-      <Divider />
-      <ListItem>
-        <ListItemText
-          primary="예금주"
-          secondary={<Typography component="span" style={textStyle.secondary}>{data.accountHolder}</Typography>}
-        />
-      </ListItem>
-      <Divider />
-      <ListItem>
-        <ListItemText
-          primary="전화번호"
-          secondary={<Typography component="span" style={textStyle.secondary}>{data.phoneNumber}</Typography>}
-        />
-      </ListItem>
-      <Divider />
+              <ListItemText
+                primary="은행명"
+                secondary={<Typography component="span" style={textStyle.secondary}>{data.bankName}</Typography>}
+              />
+            </ListItem>
+              <Divider />
+            <ListItem>
+              <ListItemText
+                primary="계좌번호"
+                secondary={<Typography component="span" style={textStyle.secondary}>{data.accountNumber}</Typography>}
+              />
+            </ListItem>
+              <Divider />
+            <ListItem>
+              <ListItemText
+                primary="예금주"
+                secondary={<Typography component="span" style={textStyle.secondary}>{data.accountHolder}</Typography>}
+              />
+            </ListItem>
+            <Divider />
+            <ListItem>
+              <ListItemText
+                primary="전화번호"
+                secondary={<Typography component="span" style={textStyle.secondary}>{data.phoneNumber}</Typography>}
+              />
+            </ListItem>
+            <Divider />
           </List>
         </Box>
         <Box position="fixed" bottom={0} left={0} right={0}>

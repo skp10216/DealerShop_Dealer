@@ -19,7 +19,10 @@ export const DataProvider = ({ children }) => {
     accountHolder: '', // 예금주
     accountNumber: '', // 계좌번호
     bankName: '', // 은행명
-    phoneNumber: '' // 핸드폰번호
+    phoneNumber: '', // 핸드폰번호
+    //대리점 정보
+    shopName: '', 
+    shopID: null,
   };
 
   const [data, setData] = useState(initialState);
