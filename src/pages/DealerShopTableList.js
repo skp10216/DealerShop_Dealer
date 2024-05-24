@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 import {
   Table, TableBody, TableContainer, TableHead, TableRow, Paper, Button, Typography, Grid
 } from '@mui/material';
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
+import { TableCell,tableCellClasses} from '@mui/material';
 import { useAuth } from '../contexts/AuthContext';
 import PurchaseInfoModal from '../components/PurchaseInfoModal';
 import PaymentInfoModal from '../components/PaymentInfoModal';
