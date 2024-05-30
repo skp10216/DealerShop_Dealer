@@ -1,3 +1,4 @@
+import React from 'react';
 import PropTypes from 'prop-types';
 import { forwardRef } from 'react';
 
@@ -5,7 +6,7 @@ import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import { useTheme } from '@mui/material/styles';
 
-import  RouterLink  from '../../routes/compenents/router-link';
+import  RouterLink  from '../../routes/components/router-link';
 
 // ----------------------------------------------------------------------
 
@@ -86,6 +87,9 @@ const Logo = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
     </Link>
   );
 });
+
+// displayName 추가
+Logo.displayName = 'Logo';
 
 Logo.propTypes = {
   disabledLink: PropTypes.bool,

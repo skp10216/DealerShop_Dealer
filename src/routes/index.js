@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import AdminRoutes from './AdminRoutes';
 import UserRoutes from './UserRoutes';
+import DashboardRoutes from './DashBoardRoutes';
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -14,6 +15,7 @@ const AppRoutes = () => {
     <Routes>
       {UserRoutes()}
       {AdminRoutes()}
+      <Route path="/admin/*" element={<DashboardRoutes />} />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );

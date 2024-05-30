@@ -1,3 +1,4 @@
+import React from 'react';
 import { m } from 'framer-motion';
 import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';

@@ -1,3 +1,4 @@
+import React from 'react'; 
 import PropTypes from 'prop-types';
 import { forwardRef } from 'react';
 import { Icon } from '@iconify/react';
@@ -17,10 +18,15 @@ import Box from '@mui/material/Box';
   />
 ));
 
+// displayName 추가
+Iconify.displayName = 'Iconify';
+
 Iconify.propTypes = {
   icon: PropTypes.oneOfType([PropTypes.element, PropTypes.string]),
   sx: PropTypes.object,
   width: PropTypes.number,
 };
+
+
 
 export default Iconify;

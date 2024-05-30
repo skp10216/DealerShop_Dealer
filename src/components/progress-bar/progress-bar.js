@@ -1,3 +1,4 @@
+import React from 'react'; 
 import NProgress from 'nprogress';
 import { useState, useEffect } from 'react';
 

@@ -1,3 +1,4 @@
+import React from 'react';
 import { m } from 'framer-motion';
 import PropTypes from 'prop-types';
 
@@ -7,7 +8,7 @@ import Badge, { badgeClasses } from '@mui/material/Badge';
 
 import Iconify from '../../components/iconify/iconify';
 import { varHover } from '../../components/animate/variants/actions';
-import { useSettingsContext } from '../../components/settings/SettingsContext';
+import { useSettingsContext } from 'components/settings/context/settings-context';
 
 // ----------------------------------------------------------------------
 

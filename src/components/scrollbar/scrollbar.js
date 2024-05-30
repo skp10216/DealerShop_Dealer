@@ -1,3 +1,4 @@
+import React from 'react'; 
 import PropTypes from 'prop-types';
 import { memo, forwardRef } from 'react';
 
@@ -35,6 +36,8 @@ const Scrollbar = forwardRef(({ children, sx, ...other }, ref) => {
     </StyledRootScrollbar>
   );
 });
+
+Scrollbar.displayName = 'Scrollbar';
 
 Scrollbar.propTypes = {
   children: PropTypes.node,

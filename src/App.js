@@ -8,6 +8,7 @@ import ThemeProvider from './theme/ThemeProvider';
 import { SettingsProvider } from './components/settings/context/settings-provider';
 import SettingsDrawer from './components/settings/drawer/settings-drawer';
 import { MotionLazy } from './components/animate/motion-lazy';
+
 import ProgressBar from './components/progress-bar/progress-bar';
 
 const App = () => (

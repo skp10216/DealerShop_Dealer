@@ -1,3 +1,4 @@
+import React from 'react'; 
 import PropTypes from 'prop-types';
 import { forwardRef } from 'react';
 
@@ -22,6 +23,8 @@ const SvgColor = forwardRef(({ src, sx, ...other }, ref) => (
     {...other}
   />
 ));
+
+SvgColor.displayName= 'SvgColor';
 
 SvgColor.propTypes = {
   src: PropTypes.string,

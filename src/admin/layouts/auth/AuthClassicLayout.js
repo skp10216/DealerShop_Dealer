@@ -1,3 +1,4 @@
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import Box from '@mui/material/Box';
@@ -8,7 +9,7 @@ import Typography from '@mui/material/Typography';
 import { alpha, useTheme } from '@mui/material/styles';
 
 import { paths } from '../../routes/paths';
-import  RouterLink  from '../../routes/compenents/router-link';
+import  RouterLink  from '../../routes/components/router-link';
 
 import { useResponsive } from '../../hooks/use-responsive';
 

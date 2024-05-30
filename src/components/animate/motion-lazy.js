@@ -1,3 +1,4 @@
+import React from 'react'; 
 import PropTypes from 'prop-types';
 import { m, domMax, LazyMotion } from 'framer-motion';
 

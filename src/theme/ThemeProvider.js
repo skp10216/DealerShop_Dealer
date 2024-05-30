@@ -28,7 +28,6 @@ export default function ThemeProvider({ children }) {
   const settings = useSettingsContext();
 
   const presets = createPresets(settings.themeColorPresets);
-  console.log('Presets:', presets);
 
   const contrast = createContrast(settings.themeContrast, settings.themeMode);
 

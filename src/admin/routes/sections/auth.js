@@ -1,10 +1,11 @@
+import React from 'react';
 import { lazy, Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 
-import CompactLayout from '../../layouts/compact/CompactLayout';
+//import CompactLayout from '../../layouts/compact/CompactLayout';
 import AuthModernLayout from '../../layouts/auth/AuthModernLayout';
-import AuthClassicLayout from '../../layouts/auth/AuthClassicLayout';
-import AuthModernCompactLayout from '../../layouts/auth/AuthModernCompactLayout';
+//import AuthClassicLayout from '../../layouts/auth/AuthClassicLayout';
+//import AuthModernCompactLayout from '../../layouts/auth/AuthModernCompactLayout';
 
 import  SplashScreen  from '../../components/loading-screen/SplashScreen';
 
