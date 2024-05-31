@@ -68,7 +68,7 @@ export default function NavVertical({ openNav, onCloseNav }) {
     <Box
       sx={{
         flexShrink: { lg: 0 },
-        width: { lg: NAV.W_VERTICAL },
+        width: { lg: NAV.W_VERTICAL }
       }}
     >
       <NavToggleButton />

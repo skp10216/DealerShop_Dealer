@@ -22,15 +22,16 @@ import RHFTextField from '../../components/hook-form/RHFTextField';
 // ----------------------------------------------------------------------
 
 export default function ModernLoginView() {
+
   const password = useBoolean();
 
   const LoginSchema = Yup.object().shape({
-    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
+    id: Yup.string().required('ID is required'),
     password: Yup.string().required('Password is required'),
   });
 
   const defaultValues = {
-    email: '',
+    id: '',
     password: '',
   };
 
@@ -46,8 +47,32 @@ export default function ModernLoginView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      console.info('DATA', data);
+      
+      console.log('Submitting:', data);
+
+       // 서버로 전송할 데이터 변환
+       const transformedData = {
+        Username: data.id,
+        Password: data.password,
+        UserType: "Admin"
+      };
+ 
+      // 서버로 데이터 전송
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(transformedData),
+      });
+
+      if (response.ok) {
+        // 로그인 성공 시 페이지 이동
+        window.location.href = '/admin/dashboard/user/list';
+      } else {
+        // 오류 처리
+        console.error('Login failed');
+      }
     } catch (error) {
       console.error(error);
     }
@@ -69,7 +94,7 @@ export default function ModernLoginView() {
 
   const renderForm = (
     <Stack spacing={2.5}>
-      <RHFTextField name="ID" label="ID" />
+      <RHFTextField name="id" label="ID" />
 
       <RHFTextField
         name="password"
