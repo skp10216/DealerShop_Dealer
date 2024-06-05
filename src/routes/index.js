@@ -16,7 +16,7 @@ const AppRoutes = () => {
       {UserRoutes()}
       {AdminRoutes()}
       <Route path="/admin/*" element={<DashboardRoutes />} />
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      
     </Routes>
   );
 };

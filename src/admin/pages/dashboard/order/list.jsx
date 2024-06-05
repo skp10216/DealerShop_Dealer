@@ -1,11 +1,16 @@
+import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 
-import { OrderListView } from 'src/sections/order/view';
+import { OrderListView } from 'admin/sections/order/view';
 
 // ----------------------------------------------------------------------
 
 export default function OrderListPage() {
-  return (
+  useEffect(() => {
+    console.log('OrderListPage loaded');
+  }, []);
+
+  return (    
     <>
       <Helmet>
         <title> Dashboard: Order List</title>

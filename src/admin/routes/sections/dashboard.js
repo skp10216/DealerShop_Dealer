@@ -5,7 +5,12 @@ import { Outlet } from 'react-router-dom';
 import DashboardLayout from '../../layouts/dashboard/DashboardLayout';
 import LoadingScreen from 'admin/components/loading-screen/LoadingScreen';
 
+//User
 const UserListPage = lazy(() => import('admin/pages/dashboard/user/list'));
+
+// ORDER
+const OrderListPage = lazy(() => import('admin/pages/dashboard/order/list'));
+//const OrderDetailsPage = lazy(() => import('admin/pages/dashboard/order/details'));
 
 export const dashboardRoutes = [
   {
@@ -24,6 +29,14 @@ export const dashboardRoutes = [
         path: 'user',
         children: [
           { path: 'list', element: <UserListPage /> },
+        ],
+      },
+      {
+        path: 'order',
+        children: [
+          
+          { path: 'list', element: <OrderListPage /> },
+          
         ],
       },
     ],

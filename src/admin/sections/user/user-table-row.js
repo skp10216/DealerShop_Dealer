@@ -15,16 +15,16 @@ import { useBoolean } from 'admin/hooks/use-boolean';
 
 import Label from 'components/label/label';
 import Iconify from 'admin/components/iconify/iconify';
-import ConfirmDialog  from 'components/custom-dialog/ConfirmDialog';
+import ConfirmDialog from 'components/custom-dialog/ConfirmDialog';
 import CustomPopover from 'components/custom-popover/CustomPopover';
-import usePopover  from 'components/custom-popover/use-popover';
+import usePopover from 'components/custom-popover/use-popover';
 
 import UserQuickEditForm from './user-quick-edit-form';
 
 // ----------------------------------------------------------------------
 
 export default function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
-  const { name, avatarUrl, company, role, status, email, phoneNumber } = row;
+  const { UserID, Username, Name, PhoneNumber, Address, UserType, Status, BankName, AccountHolder, AccountNumber } = row;
 
   const confirm = useBoolean();
 
@@ -40,11 +40,10 @@ export default function UserTableRow({ row, selected, onEditRow, onSelectRow, on
         </TableCell>
 
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar alt={name} src={avatarUrl} sx={{ mr: 2 }} />
-
+          <Avatar alt={Name} src="" sx={{ mr: 2 }} />  {/* Avatar URL을 필요에 맞게 설정 */}
           <ListItemText
-            primary={name}
-            secondary={email}
+            primary={Name}
+            secondary={Username}
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
               component: 'span',
@@ -53,25 +52,25 @@ export default function UserTableRow({ row, selected, onEditRow, onSelectRow, on
           />
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{phoneNumber}</TableCell>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{company}</TableCell>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{role}</TableCell>
-
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{PhoneNumber}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{Address}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{UserType}</TableCell>
         <TableCell>
           <Label
             variant="soft"
             color={
-              (status === 'active' && 'success') ||
-              (status === 'pending' && 'warning') ||
-              (status === 'banned' && 'error') ||
+              (Status === 'Active' && 'success') ||
+              (Status === 'pending' && 'warning') ||
+              (Status === 'Banned' && 'error') ||
               'default'
             }
           >
-            {status}
+            {Status}
           </Label>
         </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{BankName}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{AccountHolder}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{AccountNumber}</TableCell>
 
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <Tooltip title="Quick Edit" placement="top" arrow>

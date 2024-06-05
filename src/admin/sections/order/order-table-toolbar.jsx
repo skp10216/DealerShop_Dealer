@@ -3,49 +3,46 @@ import PropTypes from 'prop-types';
 import { useCallback } from 'react';
 
 import Stack from '@mui/material/Stack';
-import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
-import InputLabel from '@mui/material/InputLabel';
 import IconButton from '@mui/material/IconButton';
-import FormControl from '@mui/material/FormControl';
-import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { formHelperTextClasses } from '@mui/material/FormHelperText';
 
 import Iconify from 'admin/components/iconify/iconify';
-import CustomPopover  from 'components/custom-popover/CustomPopover';
-import usePopover  from 'components/custom-popover/use-popover';
+import CustomPopover from 'components/custom-popover/CustomPopover';
+import usePopover from 'components/custom-popover/use-popover';
 
 // ----------------------------------------------------------------------
 
-export default function UserTableToolbar({
-  filters,
-  onFilters,
-  //
-  roleOptions,
-}) {
+export default function OrderTableToolbar({ filters, onFilters, dateError }) {
   const popover = usePopover();
 
   const handleFilterName = useCallback(
     (event) => {
-      onFilters('username', event.target.value);
+      onFilters('name', event.target.value);
     },
     [onFilters]
   );
 
-  const handleFilterRole = useCallback(
-    (event) => {
-      onFilters(
-        'role',
-        typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value
-      );
+  const handleFilterStartDate = useCallback(
+    (newValue) => {
+      onFilters('startDate', newValue);
+    },
+    [onFilters]
+  );
+
+  const handleFilterEndDate = useCallback(
+    (newValue) => {
+      onFilters('endDate', newValue);
     },
     [onFilters]
   );
 
   return (
-    <>
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Stack
         spacing={2}
         alignItems={{ xs: 'flex-end', md: 'center' }}
@@ -58,41 +55,46 @@ export default function UserTableToolbar({
           pr: { xs: 2.5, md: 1 },
         }}
       >
-        <FormControl
-          sx={{
-            flexShrink: 0,
-            width: { xs: 1, md: 200 },
+        <DatePicker
+          label="Start date"
+          value={filters.startDate}
+          onChange={handleFilterStartDate}
+          slotProps={{
+            textField: {
+              fullWidth: true,
+            },
           }}
-        >
-          <InputLabel>Role</InputLabel>
+          sx={{
+            maxWidth: { md: 200 },
+          }}
+        />
 
-          <Select
-            multiple
-            value={filters.role}
-            onChange={handleFilterRole}
-            input={<OutlinedInput label="Role" />}
-            renderValue={(selected) => selected.map((value) => value).join(', ')}
-            MenuProps={{
-              PaperProps: {
-                sx: { maxHeight: 240 },
-              },
-            }}
-          >
-            {roleOptions.map((option) => (
-              <MenuItem key={option} value={option}>
-                <Checkbox disableRipple size="small" checked={filters.role.includes(option)} />
-                {option}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <DatePicker
+          label="End date"
+          value={filters.endDate}
+          onChange={handleFilterEndDate}
+          slotProps={{
+            textField: {
+              fullWidth: true,
+              error: dateError,
+              helperText: dateError && 'End date must be later than start date',
+            },
+          }}
+          sx={{
+            maxWidth: { md: 200 },
+            [`& .${formHelperTextClasses.root}`]: {
+              position: { md: 'absolute' },
+              bottom: { md: -40 },
+            },
+          }}
+        />
 
         <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
             fullWidth
-            value={filters.username}
+            value={filters.name}
             onChange={handleFilterName}
-            placeholder="Search..."
+            placeholder="Search customer or order number..."
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -141,12 +143,12 @@ export default function UserTableToolbar({
           Export
         </MenuItem>
       </CustomPopover>
-    </>
+    </LocalizationProvider>
   );
 }
 
-UserTableToolbar.propTypes = {
+OrderTableToolbar.propTypes = {
+  dateError: PropTypes.bool,
   filters: PropTypes.object,
   onFilters: PropTypes.func,
-  roleOptions: PropTypes.array,
 };

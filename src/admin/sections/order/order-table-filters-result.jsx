@@ -1,4 +1,3 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 import { useCallback } from 'react';
 
@@ -9,10 +8,11 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 
 import Iconify from 'admin/components/iconify/iconify';
+import { shortDateLabel } from 'components/custom-date-range-picker';
 
 // ----------------------------------------------------------------------
 
-export default function UserTableFiltersResult({
+export default function OrderTableFiltersResult({
   filters,
   onFilters,
   //
@@ -21,22 +21,20 @@ export default function UserTableFiltersResult({
   results,
   ...other
 }) {
+  const shortLabel = shortDateLabel(filters.startDate, filters.endDate);
+
   const handleRemoveKeyword = useCallback(() => {
-    onFilters('username', '');
+    onFilters('name', '');
   }, [onFilters]);
 
   const handleRemoveStatus = useCallback(() => {
     onFilters('status', 'all');
   }, [onFilters]);
 
-  const handleRemoveRole = useCallback(
-    (inputValue) => {
-      const newValue = filters.role.filter((item) => item !== inputValue);
-
-      onFilters('role', newValue);
-    },
-    [filters.role, onFilters]
-  );
+  const handleRemoveDate = useCallback(() => {
+    onFilters('startDate', null);
+    onFilters('endDate', null);
+  }, [onFilters]);
 
   return (
     <Stack spacing={1.5} {...other}>
@@ -54,17 +52,15 @@ export default function UserTableFiltersResult({
           </Block>
         )}
 
-        {!!filters.role.length && (
-          <Block label="Role:">
-            {filters.role.map((item) => (
-              <Chip key={item} label={item} size="small" onDelete={() => handleRemoveRole(item)} />
-            ))}
+        {filters.startDate && filters.endDate && (
+          <Block label="Date:">
+            <Chip size="small" label={shortLabel} onDelete={handleRemoveDate} />
           </Block>
         )}
 
-        {!!filters.username && (
+        {!!filters.name && (
           <Block label="Keyword:">
-            <Chip label={filters.username} size="small" onDelete={handleRemoveKeyword} />
+            <Chip label={filters.name} size="small" onDelete={handleRemoveKeyword} />
           </Block>
         )}
 
@@ -80,7 +76,7 @@ export default function UserTableFiltersResult({
   );
 }
 
-UserTableFiltersResult.propTypes = {
+OrderTableFiltersResult.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   onResetFilters: PropTypes.func,
